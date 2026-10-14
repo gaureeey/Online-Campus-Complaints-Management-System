@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Log In | OCMS{% endblock %}
+
+{% block public_content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+      <div class="ocms-card p-4 p-md-5 bg-white">
+        <div class="text-center mb-4">
+          <span class="brand-badge fs-6 d-inline-block mb-2">OCMS</span>
+          <h3 class="fw-bold text-dark">Welcome Back</h3>
+          <p class="text-muted small">Sign in to submit complaints and follow resolution updates.</p>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST" class="needs-validation">
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="loginEmail" name="email" placeholder="name@campus.edu" required value="rahul.sharma@example.com">
+          </div>
+
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label for="loginPassword" class="form-label mb-0">Password</label>
+              <a href="{{ url_for('forgot_password') }}" class="small text-primary text-decoration-none">Forgot password?</a>
+            </div>
+            <input type="password" class="form-control" id="loginPassword" name="password" placeholder="••••••••" required value="Password@123">
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 mb-3 shadow-sm">
+            Log In
+          </button>
+        </form>
+
+        <div class="text-center small text-muted mb-4">
+          Don't have an account? <a href="{{ url_for('register') }}" class="text-primary fw-medium text-decoration-none">Register here</a>
+        </div>
+
+        <!-- 1-Click Fast Track Demo Logins -->
+        <div class="pt-3 border-top">
+          <span class="small text-muted fw-semibold d-block mb-2 text-center">Fast-Track Demo Access:</span>
+          <div class="d-grid gap-2">
+            <a href="{{ url_for('switch_role', role='user') }}" class="btn btn-sm btn-light border text-start d-flex justify-content-between align-items-center py-2">
+              <span><i class="bi bi-person me-2 text-primary"></i> Citizen / Student (Rahul)</span>
+              <span class="text-muted small">&rarr;</span>
+            </a>
+            <a href="{{ url_for('switch_role', role='staff') }}" class="btn btn-sm btn-light border text-start d-flex justify-content-between align-items-center py-2">
+              <span><i class="bi bi-wrench me-2 text-teal"></i> Staff Officer (Priya)</span>
+              <span class="text-muted small">&rarr;</span>
+            </a>
+            <a href="{{ url_for('switch_role', role='admin') }}" class="btn btn-sm btn-light border text-start d-flex justify-content-between align-items-center py-2">
+              <span><i class="bi bi-shield-lock me-2 text-danger"></i> Administrator (Dr. Arvind)</span>
+              <span class="text-muted small">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

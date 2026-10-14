@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Overview | OCMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">Staff Overview</h2>
+    <p class="text-muted small mb-0">Assigned maintenance tasks and resolution queue.</p>
+  </div>
+  <a href="{{ url_for('staff_complaints') }}" class="btn btn-primary shadow-sm mt-3 mt-md-0">
+    <i class="bi bi-wrench me-1"></i> View Assigned Tasks ({{ stats.total_assigned }})
+  </a>
+</div>
+
+<!-- 3 Clean Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">Assigned Tasks</span>
+          <h3 class="fw-bold text-dark mt-2 mb-0">{{ stats.total_assigned }}</h3>
+        </div>
+        <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-briefcase"></i></div>
+      </div>
+      <div class="small text-muted mt-2">Total tasks allocated to you</div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">In Progress</span>
+          <h3 class="fw-bold text-primary mt-2 mb-0">{{ stats.pending_action }}</h3>
+        </div>
+        <div class="stat-icon bg-info-subtle text-primary"><i class="bi bi-wrench"></i></div>
+      </div>
+      <div class="small text-muted mt-2">Active repairs on site</div>
+    </div>
+  </div>
+
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">Resolved</span>
+          <h3 class="fw-bold text-success mt-2 mb-0">{{ stats.resolved }}</h3>
+        </div>
+        <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-check2-circle"></i></div>
+      </div>
+      <div class="small text-muted mt-2">Completed successfully</div>
+    </div>
+  </div>
+</div>
+
+<!-- Assigned Tasks Table -->
+<div class="ocms-card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold text-dark mb-0">Active Task Queue</h5>
+    <a href="{{ url_for('staff_complaints') }}" class="btn btn-light btn-sm border">View All &rarr;</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Tracking Number</th>
+          <th>Title & Location</th>
+          <th>Status</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comp in stats.assigned_complaints %}
+        <tr>
+          <td>
+            <a href="{{ url_for('staff_complaint_detail', complaint_no=comp.complaint_no) }}" class="fw-semibold text-primary font-monospace text-decoration-none">
+              {{ comp.complaint_no }}
+            </a>
+          </td>
+          <td>
+            <span class="fw-medium text-dark d-block text-truncate" style="max-width: 280px;">{{ comp.subject }}</span>
+            <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ comp.location }}</small>
+          </td>
+          <td>
+            <span class="badge-status badge-{{ comp.status | lower | replace(' ', '') }}">{{ comp.status }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('staff_complaint_detail', complaint_no=comp.complaint_no) }}" class="btn btn-sm btn-primary py-1 px-3">
+              Work on Issue
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

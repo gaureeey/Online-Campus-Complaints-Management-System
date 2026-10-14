@@ -1,0 +1,35 @@
+<div class="role-switcher-banner">
+  <div class="container-fluid d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-primary text-uppercase fw-bold"><i class="bi bi-person-badge-fill me-1"></i> Demo Role Switcher</span>
+      <span class="small text-light d-none d-md-inline">Active Persona:</span>
+      <strong class="text-warning">
+        {% if session.get('role') == 'admin' %}
+          Admin (Dr. Arvind Mehta)
+        {% elif session.get('role') == 'staff' %}
+          Staff Officer (Priya Nair)
+        {% elif session.get('role') == 'user' %}
+          User / Citizen (Rahul Sharma)
+        {% else %}
+          Public Visitor (Guest)
+        {% endif %}
+      </strong>
+    </div>
+
+    <div class="d-flex align-items-center flex-wrap gap-1">
+      <span class="small text-secondary me-1 d-none d-lg-inline">Switch View:</span>
+      <a href="{{ url_for('switch_role', role='guest') }}" class="role-badge-btn {% if not session.get('role') %}active{% endif %}">
+        <i class="bi bi-box-arrow-right"></i> Guest
+      </a>
+      <a href="{{ url_for('switch_role', role='user') }}" class="role-badge-btn {% if session.get('role') == 'user' %}active{% endif %}">
+        <i class="bi bi-person"></i> Citizen / User
+      </a>
+      <a href="{{ url_for('switch_role', role='staff') }}" class="role-badge-btn {% if session.get('role') == 'staff' %}active{% endif %}">
+        <i class="bi bi-tools"></i> Staff Officer
+      </a>
+      <a href="{{ url_for('switch_role', role='admin') }}" class="role-badge-btn {% if session.get('role') == 'admin' %}active{% endif %}">
+        <i class="bi bi-shield-lock"></i> Admin
+      </a>
+    </div>
+  </div>
+</div>

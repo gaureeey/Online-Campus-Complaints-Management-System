@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Overview | OCMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">Admin Overview</h2>
+    <p class="text-muted small mb-0">Monitor new complaints, assign technicians, and track resolution progress.</p>
+  </div>
+  <div class="d-flex gap-2 mt-3 mt-md-0">
+    <a href="{{ url_for('admin_reports') }}" class="btn btn-light border">
+      <i class="bi bi-file-earmark-text me-1"></i> Reports
+    </a>
+    <a href="{{ url_for('admin_complaints') }}" class="btn btn-primary shadow-sm">
+      <i class="bi bi-inbox me-1"></i> View All Complaints
+    </a>
+  </div>
+</div>
+
+<!-- 4 Clean Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">New Complaints</span>
+          <h3 class="fw-bold text-dark mt-2 mb-0">{{ admin_stats.submitted }}</h3>
+        </div>
+        <div class="stat-icon bg-warning-subtle text-warning">
+          <i class="bi bi-bell"></i>
+        </div>
+      </div>
+      <div class="small text-muted mt-2">Awaiting staff assignment</div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">In Progress</span>
+          <h3 class="fw-bold text-primary mt-2 mb-0">{{ admin_stats.in_progress }}</h3>
+        </div>
+        <div class="stat-icon bg-primary-subtle text-primary">
+          <i class="bi bi-wrench"></i>
+        </div>
+      </div>
+      <div class="small text-muted mt-2">Technicians working on-site</div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">Resolved</span>
+          <h3 class="fw-bold text-success mt-2 mb-0">{{ admin_stats.resolved }}</h3>
+        </div>
+        <div class="stat-icon bg-success-subtle text-success">
+          <i class="bi bi-check2-circle"></i>
+        </div>
+      </div>
+      <div class="small text-muted mt-2">Closed successfully</div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <span class="text-muted small fw-medium">Needs Attention</span>
+          <h3 class="fw-bold text-danger mt-2 mb-0">{{ admin_stats.overdue }}</h3>
+        </div>
+        <div class="stat-icon bg-danger-subtle text-danger">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+      </div>
+      <div class="small text-danger mt-2">Exceeded target timeline</div>
+    </div>
+  </div>
+</div>
+
+<!-- Single Clean Chart (Resolution Trend) -->
+<div class="ocms-card p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold text-dark mb-0">Monthly Complaints & Resolution Trend</h5>
+      <span class="text-muted small">Comparison of incoming vs resolved issues</span>
+    </div>
+  </div>
+  <div style="height: 260px;">
+    <canvas id="singleTrendChart"></canvas>
+  </div>
+</div>
+
+<!-- Recent Complaints List (5 Columns) -->
+<div class="ocms-card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="fw-bold text-dark mb-0">Recent Complaints</h5>
+      <span class="text-muted small">Issues needing review or staff assignment</span>
+    </div>
+    <a href="{{ url_for('admin_complaints') }}" class="btn btn-light btn-sm border">
+      Manage All &rarr;
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>Tracking Number</th>
+          <th>Citizen</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Assigned Staff</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comp in admin_stats.recent_complaints %}
+        <tr>
+          <td>
+            <a href="{{ url_for('admin_complaint_detail', complaint_no=comp.complaint_no) }}" class="fw-semibold text-primary font-monospace text-decoration-none">
+              {{ comp.complaint_no }}
+            </a>
+          </td>
+          <td>
+            <span class="fw-medium text-dark">{{ comp.user_name }}</span>
+          </td>
+          <td>
+            <span class="d-block text-dark fw-medium text-truncate" style="max-width: 250px;">{{ comp.subject }}</span>
+            <small class="text-muted">{{ comp.category_name }}</small>
+          </td>
+          <td>
+            <span class="badge-status badge-{{ comp.status | lower | replace(' ', '') }}">
+              {{ comp.status }}
+            </span>
+          </td>
+          <td>
+            <span class="small {% if comp.assigned_name == 'Unassigned' %}text-danger fw-semibold{% else %}text-muted{% endif %}">
+              {{ comp.assigned_name }}
+            </span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('admin_complaint_detail', complaint_no=comp.complaint_no) }}" class="btn btn-sm btn-light border py-1 px-3">
+              Review
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

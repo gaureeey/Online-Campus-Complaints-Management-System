@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit a Complaint | OCMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-xl-8 col-lg-10">
+    
+    <!-- Top Back Navigation -->
+    <div class="mb-3">
+      <a href="{{ url_for('my_complaints') }}" class="text-decoration-none small text-muted">
+        <i class="bi bi-arrow-left me-1"></i> Back to My Complaints
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-4">
+      <h2 class="fw-bold text-dark mb-1">Submit a Complaint</h2>
+      <p class="text-muted small mb-0">Fill in the short form below. A technician will be assigned to inspect and resolve it.</p>
+    </div>
+
+    <!-- Main Clean Card Form -->
+    <div class="ocms-card p-4 p-md-5 bg-white">
+      <form action="{{ url_for('submit_complaint') }}" method="POST" enctype="multipart/form-data" id="complaintForm" class="needs-validation">
+        
+        <!-- 1. Category -->
+        <div class="mb-4">
+          <label for="complaintCategory" class="form-label">
+            Category <span class="text-danger">*</span>
+          </label>
+          <select class="form-select form-select-lg" id="complaintCategory" name="category_id" required>
+            <option value="" selected disabled>Select the category that matches your issue...</option>
+            {% for cat in categories %}
+            <option value="{{ cat.category_id }}">{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">Choosing the right category helps us assign the right technician faster.</div>
+        </div>
+
+        <!-- 2. Title / Summary -->
+        <div class="mb-4">
+          <label for="complaintSubject" class="form-label">
+            Title <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control form-control-lg" id="complaintSubject" name="subject" placeholder="e.g. Wi-Fi router not connecting in Room 204" required>
+          <div class="form-text">Give a short one-line summary of what is broken or not working.</div>
+        </div>
+
+        <!-- 3. Description -->
+        <div class="mb-4">
+          <label for="complaintDescription" class="form-label">
+            Description <span class="text-danger">*</span>
+          </label>
+          <textarea class="form-control" id="complaintDescription" name="description" rows="4" placeholder="e.g. The Wi-Fi disconnected this morning and the power light is blinking orange. We tried restarting it but it still doesn't connect." required></textarea>
+          <div class="form-text">Describe what happened in 2-3 lines so our technician knows what to bring.</div>
+        </div>
+
+        <!-- 4. Location (Optional) -->
+        <div class="mb-4">
+          <label for="complaintLocation" class="form-label">
+            Location <span class="text-muted fw-normal">(Optional)</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt"></i></span>
+            <input type="text" class="form-control" id="complaintLocation" name="location" placeholder="e.g. Hostel Block B, 2nd Floor, Room 204">
+          </div>
+          <div class="form-text">Building name, floor or room number where the issue occurred.</div>
+        </div>
+
+        <!-- 5. Photo / Document Upload (Optional) -->
+        <div class="mb-4">
+          <label class="form-label">
+            Photo or Document <span class="text-muted fw-normal">(Optional)</span>
+          </label>
+          <div class="clean-dropzone" id="uploadDropzone" onclick="document.getElementById('complaintAttachments').click();">
+            <i class="bi bi-cloud-arrow-up fs-2 text-primary d-block mb-1"></i>
+            <span class="fw-semibold text-dark small d-block">Click to upload photo or document</span>
+            <span class="text-muted" style="font-size: 0.8125rem;">Max 3 files &bull; Up to 5 MB each &bull; JPG, PNG, PDF</span>
+          </div>
+          <input type="file" id="complaintAttachments" name="attachments" multiple accept=".jpg,.jpeg,.png,.pdf" class="d-none">
+          <div class="row g-2 mt-2" id="filePreviewContainer"></div>
+        </div>
+
+        <!-- Primary Action Button -->
+        <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+          <a href="{{ url_for('my_complaints') }}" class="btn btn-light border">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+            <i class="bi bi-check2-circle me-1"></i> Submit Complaint
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

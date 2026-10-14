@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}My Complaints | OCMS{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">My Complaints</h2>
+    <p class="text-muted small mb-0">Follow updates, review technician notes, and confirm fixes.</p>
+  </div>
+  <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary shadow-sm mt-3 mt-md-0">
+    <i class="bi bi-plus-circle me-1"></i> Submit a Complaint
+  </a>
+</div>
+
+<!-- Simple Clean Search & Filter Bar -->
+<div class="ocms-card p-3 mb-4">
+  <form action="{{ url_for('my_complaints') }}" method="GET" class="row g-2 align-items-center">
+    <div class="col-md-7">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+        <input type="text" name="search" class="form-control border-start-0" placeholder="Search by tracking number or issue title..." value="{{ current_search or '' }}">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <select name="status" class="form-select" onchange="this.form.submit()">
+        <option value="all" {% if current_status == 'all' or not current_status %}selected{% endif %}>All Statuses</option>
+        <option value="Submitted" {% if current_status == 'Submitted' %}selected{% endif %}>Submitted</option>
+        <option value="In Progress" {% if current_status == 'In Progress' %}selected{% endif %}>In Progress</option>
+        <option value="Resolved" {% if current_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+        <option value="Rejected" {% if current_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-1 text-end">
+      <a href="{{ url_for('my_complaints') }}" class="btn btn-light border w-100" title="Reset">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- Complaints Ledger (4-5 Columns) -->
+<div class="ocms-card p-4">
+  {% if complaints %}
+  <div class="table-responsive">
+    <table class="table align-middle filterable-table">
+      <thead>
+        <tr>
+          <th>Tracking Number</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comp in complaints %}
+        <tr>
+          <td>
+            <a href="{{ url_for('complaint_detail', complaint_no=comp.complaint_no) }}" class="fw-semibold text-primary text-decoration-none font-monospace">
+              {{ comp.complaint_no }}
+            </a>
+          </td>
+          <td>
+            <a href="{{ url_for('complaint_detail', complaint_no=comp.complaint_no) }}" class="text-dark fw-medium text-decoration-none d-block text-truncate" style="max-width: 280px;">
+              {{ comp.subject }}
+            </a>
+            {% if comp.location %}
+            <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ comp.location }}</small>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge bg-light text-secondary border">{{ comp.category_name }}</span>
+          </td>
+          <td>
+            <span class="badge-status badge-{{ comp.status | lower | replace(' ', '') }}">
+              {{ comp.status }}
+            </span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('complaint_detail', complaint_no=comp.complaint_no) }}" class="btn btn-sm btn-light border py-1 px-3">
+              View &rarr;
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Simple Pagination -->
+  <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top small text-muted">
+    <span>Showing {{ complaints|length }} complaints</span>
+    <nav aria-label="Pagination">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  {% else %}
+  <!-- Friendly Empty State -->
+  <div class="empty-state">
+    <div class="empty-state-icon">
+      <i class="bi bi-folder2-open"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">You haven't filed any complaints yet</h5>
+    <p class="text-muted small mb-3">Any issue you submit will appear here with live updates.</p>
+    <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary px-4">
+      <i class="bi bi-plus-circle me-1"></i> Submit a Complaint
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

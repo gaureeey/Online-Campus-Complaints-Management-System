@@ -1,0 +1,689 @@
+/* ==========================================================================
+   Online Complaint Management System (OCMS)
+   Calm, Modern Theme Design System
+   Palette: Deep Indigo Primary, Soft Teal Accent, Light Gray-Blue Background,
+   Crisp White Cards, Soft Pastel Status Badges
+   ========================================================================== */
+
+:root {
+  /* Brand Palette */
+  --ocms-primary: #4338ca;         /* Deep Indigo */
+  --ocms-primary-hover: #3730a3;   /* Richer Indigo */
+  --ocms-primary-light: #eef2ff;   /* Soft Indigo Tint */
+  --ocms-primary-glow: rgba(67, 56, 202, 0.15);
+
+  --ocms-teal: #0d9488;            /* Soft Teal Accent */
+  --ocms-teal-light: #f0fdfa;
+  
+  --ocms-bg: #f8fafc;              /* Light Gray-Blue Canvas */
+  --ocms-card: #ffffff;            /* Crisp White Card */
+  --ocms-border: #e2e8f0;          /* Soft Subtle Border */
+  --ocms-border-focus: #a5b4fc;    /* Indigo Focus Ring */
+  
+  --ocms-text: #1e293b;            /* Dark Slate Primary Text */
+  --ocms-text-muted: #64748b;      /* Slate Secondary Text */
+  --ocms-text-light: #94a3b8;      /* Tertiary / Helper Text */
+
+  /* Soft Pastel Status Badge Colors */
+  --status-pending-bg: #fef3c7;    /* Soft Amber / Yellow */
+  --status-pending-text: #92400e;
+  --status-pending-border: #fde68a;
+
+  --status-progress-bg: #e0e7ff;   /* Soft Indigo / Blue */
+  --status-progress-text: #3730a3;
+  --status-progress-border: #c7d2fe;
+
+  --status-resolved-bg: #d1fae5;   /* Soft Emerald / Green */
+  --status-resolved-text: #065f46;
+  --status-resolved-border: #a7f3d0;
+
+  --status-rejected-bg: #ffe4e6;   /* Soft Rose / Red */
+  --status-rejected-text: #9f1239;
+  --status-rejected-border: #fecdd3;
+
+  --status-neutral-bg: #f1f5f9;    /* Soft Slate */
+  --status-neutral-text: #475569;
+  --status-neutral-border: #e2e8f0;
+
+  /* Sizing, Radius & Shadows */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  --shadow-subtle: 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-hover: 0 10px 20px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.03);
+  --shadow-focus: 0 0 0 4px rgba(67, 56, 202, 0.12);
+
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --navbar-height: 68px;
+  --sidebar-width: 250px;
+}
+
+/* Base Document Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--ocms-bg);
+  color: var(--ocms-text);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ocms-text);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.35rem; }
+h4 { font-size: 1.15rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; }
+
+p, .form-text, .text-secondary {
+  color: var(--ocms-text-muted);
+}
+
+.text-dark { color: var(--ocms-text) !important; }
+.text-primary { color: var(--ocms-primary) !important; }
+.text-teal { color: var(--ocms-teal) !important; }
+
+/* Role Switcher Demo Banner */
+.role-switcher-banner {
+  background: #1e1b4b;
+  color: #e0e7ff;
+  font-size: 0.8125rem;
+  padding: 0.45rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.role-badge-btn {
+  color: #c7d2fe;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.role-badge-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.role-badge-btn.active {
+  background: var(--ocms-primary);
+  border-color: #818cf8;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+/* Top Navigation Bar */
+.ocms-navbar {
+  height: var(--navbar-height);
+  background: #ffffff;
+  border-bottom: 1px solid var(--ocms-border);
+  box-shadow: var(--shadow-subtle);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.brand-badge {
+  background: linear-gradient(135deg, var(--ocms-primary), #6366f1);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.ocms-navbar .nav-link {
+  color: var(--ocms-text-muted);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.ocms-navbar .nav-link:hover,
+.ocms-navbar .nav-link.active {
+  color: var(--ocms-primary);
+  background-color: var(--ocms-primary-light);
+}
+
+/* Dashboard Wrapper & Sidebar */
+.dashboard-wrapper {
+  display: flex;
+  min-height: calc(100vh - var(--navbar-height));
+  width: 100%;
+}
+
+.ocms-sidebar {
+  width: var(--sidebar-width);
+  background: #ffffff;
+  border-right: 1px solid var(--ocms-border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+  z-index: 1020;
+}
+
+.sidebar-sticky {
+  position: sticky;
+  top: var(--navbar-height);
+  height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
+  padding: 1.25rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar-section-title {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ocms-text-light);
+  font-weight: 700;
+  margin: 1rem 0 0.4rem 0.65rem;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  color: var(--ocms-text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item i {
+  font-size: 1.15rem;
+}
+
+.sidebar-nav-item:hover {
+  color: var(--ocms-primary);
+  background: var(--ocms-primary-light);
+}
+
+.sidebar-nav-item.active {
+  color: #ffffff;
+  background: var(--ocms-primary);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+  background: var(--ocms-bg);
+}
+
+/* Clean White Card System */
+.ocms-card {
+  background: var(--ocms-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--ocms-border);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ocms-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Stat Cards */
+.stat-card {
+  background: var(--ocms-card);
+  border: 1px solid var(--ocms-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.4rem;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+/* Soft Pastel Status Badges (Calm, Readable) */
+.badge-status {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid transparent;
+  line-height: 1.2;
+}
+
+.badge-submitted, .badge-pending {
+  background-color: var(--status-pending-bg);
+  color: var(--status-pending-text);
+  border-color: var(--status-pending-border);
+}
+
+.badge-assigned, .badge-inprogress, .badge-underreview {
+  background-color: var(--status-progress-bg);
+  color: var(--status-progress-text);
+  border-color: var(--status-progress-border);
+}
+
+.badge-resolved, .badge-closed {
+  background-color: var(--status-resolved-bg);
+  color: var(--status-resolved-text);
+  border-color: var(--status-resolved-border);
+}
+
+.badge-rejected {
+  background-color: var(--status-rejected-bg);
+  color: var(--status-rejected-text);
+  border-color: var(--status-rejected-border);
+}
+
+.badge-withdrawn, .badge-neutral {
+  background-color: var(--status-neutral-bg);
+  color: var(--status-neutral-text);
+  border-color: var(--status-neutral-border);
+}
+
+.badge-overdue {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+  font-weight: 700;
+}
+
+/* 4-Step Progress Tracker (Submitted -> Under Review -> In Progress -> Resolved) */
+.progress-tracker-4step {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin: 1.75rem 0 2rem;
+  padding: 0 1rem;
+}
+
+.progress-tracker-4step::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 2rem;
+  right: 2rem;
+  height: 4px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.tracker-progress-fill {
+  position: absolute;
+  top: 18px;
+  left: 2rem;
+  height: 4px;
+  background-color: var(--ocms-primary);
+  z-index: 2;
+  transition: width 0.4s ease;
+}
+
+.tracker-step {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  width: 100px;
+}
+
+.tracker-step-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #cbd5e1;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin: 0 auto 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.tracker-step.completed .tracker-step-icon {
+  background: var(--ocms-primary);
+  border-color: var(--ocms-primary);
+  color: #ffffff;
+}
+
+.tracker-step.active .tracker-step-icon {
+  background: #ffffff;
+  border-color: var(--ocms-primary);
+  color: var(--ocms-primary);
+  box-shadow: 0 0 0 4px var(--ocms-primary-light);
+}
+
+.tracker-step.rejected .tracker-step-icon {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.tracker-step-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ocms-text-muted);
+  display: block;
+}
+
+.tracker-step.active .tracker-step-label,
+.tracker-step.completed .tracker-step-label {
+  color: var(--ocms-text);
+  font-weight: 700;
+}
+
+/* 3-Step "How it works" Strip */
+.how-it-works-strip {
+  background: #ffffff;
+  border: 1px solid var(--ocms-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.75rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.how-step-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--ocms-primary-light);
+  color: var(--ocms-primary);
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Buttons System */
+.btn {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1.25rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.btn-primary {
+  background-color: var(--ocms-primary);
+  border-color: var(--ocms-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--ocms-primary-hover);
+  border-color: var(--ocms-primary-hover);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);
+}
+
+.btn-teal {
+  background-color: var(--ocms-teal);
+  border-color: var(--ocms-teal);
+  color: #ffffff;
+}
+
+.btn-teal:hover {
+  background-color: #0f766e;
+  color: #ffffff;
+}
+
+.btn-outline-primary {
+  color: var(--ocms-primary);
+  border-color: #c7d2fe;
+  background: #ffffff;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--ocms-primary-light);
+  color: var(--ocms-primary-hover);
+  border-color: var(--ocms-primary);
+}
+
+.btn-light {
+  background-color: #ffffff;
+  border-color: var(--ocms-border);
+  color: var(--ocms-text);
+}
+
+.btn-light:hover {
+  background-color: var(--ocms-bg);
+  border-color: #cbd5e1;
+}
+
+/* Forms & Inputs */
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--ocms-text);
+  margin-bottom: 0.35rem;
+}
+
+.form-control, .form-select {
+  font-size: 0.9375rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--ocms-border);
+  background-color: #ffffff;
+  color: var(--ocms-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--ocms-border-focus);
+  box-shadow: var(--shadow-focus);
+  outline: none;
+}
+
+.form-text {
+  font-size: 0.8125rem;
+  color: var(--ocms-text-muted);
+  margin-top: 0.3rem;
+}
+
+/* Clean Upload Dropzone */
+.clean-dropzone {
+  border: 2px dashed #cbd5e1;
+  background-color: #f8fafc;
+  border-radius: var(--radius-md);
+  padding: 1.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clean-dropzone:hover, .clean-dropzone.dragover {
+  border-color: var(--ocms-primary);
+  background-color: var(--ocms-primary-light);
+}
+
+/* Success Card with Big Tracking Number */
+.success-token-card {
+  background: linear-gradient(135deg, #eef2ff, #f0fdfa);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+}
+
+.big-tracking-token {
+  font-family: monospace;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--ocms-primary);
+  background: #ffffff;
+  border: 2px dashed #818cf8;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-md);
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+/* Interactive Star Rating */
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  font-size: 1.6rem;
+}
+
+.star-rating input { display: none; }
+.star-rating label {
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+  color: #f59e0b;
+}
+
+/* Simple Table Styling */
+.table {
+  vertical-align: middle;
+  margin-bottom: 0;
+}
+
+.table th {
+  background: #f8fafc;
+  color: var(--ocms-text-muted);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--ocms-border);
+  padding: 0.85rem 1rem;
+}
+
+.table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--ocms-border);
+  font-size: 0.9375rem;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: #cbd5e1;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+/* Micro-animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Responsive Overrides */
+@media (max-width: 991.98px) {
+  .ocms-sidebar {
+    position: fixed;
+    top: var(--navbar-height);
+    left: -100%;
+    height: calc(100vh - var(--navbar-height));
+    box-shadow: 4px 0 16px rgba(0,0,0,0.1);
+  }
+  
+  .ocms-sidebar.show {
+    left: 0;
+  }
+  
+  .dashboard-content {
+    padding: 1.25rem 1rem;
+  }
+  
+  .progress-tracker-4step {
+    padding: 0;
+  }
+  
+  .tracker-step {
+    width: 75px;
+  }
+  
+  .tracker-step-label {
+    font-size: 0.75rem;
+  }
+}

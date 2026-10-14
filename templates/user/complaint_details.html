@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Complaint {{ complaint.complaint_no }} | OCMS{% endblock %}
+
+{% block content %}
+<!-- Top Back Navigation -->
+<div class="mb-3">
+  <a href="{{ url_for('my_complaints') }}" class="text-decoration-none small text-muted">
+    <i class="bi bi-arrow-left me-1"></i> Back to My Complaints
+  </a>
+</div>
+
+<!-- Header Card with Big Tracking Number & Copy Button -->
+<div class="ocms-card p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="text-muted small fw-semibold">Tracking Number:</span>
+        <strong class="font-monospace fs-5 text-primary">{{ complaint.complaint_no }}</strong>
+        <button type="button" class="btn btn-sm btn-light border py-1 px-2 btn-copy-token" data-token="{{ complaint.complaint_no }}" title="Copy Number">
+          <i class="bi bi-clipboard"></i> Copy
+        </button>
+      </div>
+      <h3 class="fw-bold text-dark mb-1">{{ complaint.subject }}</h3>
+      <div class="d-flex flex-wrap gap-3 text-muted small">
+        <span><i class="bi bi-tag me-1"></i> {{ complaint.category_name }}</span>
+        {% if complaint.location %}
+        <span><i class="bi bi-geo-alt me-1"></i> {{ complaint.location }}</span>
+        {% endif %}
+        <span><i class="bi bi-calendar3 me-1"></i> Submitted {{ complaint.created_at[:10] }}</span>
+      </div>
+    </div>
+
+    <div>
+      <span class="badge-status badge-{{ complaint.status | lower | replace(' ', '') }} fs-6 px-3 py-2">
+        <i class="bi bi-dot"></i> {{ complaint.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- 4-Step Progress Tracker: Submitted -> Under Review -> In Progress -> Resolved -->
+  {% set status_step = 1 %}
+  {% if complaint.status in ['Assigned'] %}
+    {% set status_step = 2 %}
+  {% elif complaint.status in ['In Progress', 'Reopened'] %}
+    {% set status_step = 3 %}
+  {% elif complaint.status in ['Resolved', 'Closed'] %}
+    {% set status_step = 4 %}
+  {% endif %}
+
+  <div class="progress-tracker-4step">
+    <div class="tracker-progress-fill" style="width: {% if status_step == 1 %}0%{% elif status_step == 2 %}33%{% elif status_step == 3 %}66%{% else %}100%{% endif %};"></div>
+    
+    <div class="tracker-step {% if status_step >= 1 %}completed{% endif %}">
+      <div class="tracker-step-icon"><i class="bi bi-check2"></i></div>
+      <span class="tracker-step-label">1. Submitted</span>
+    </div>
+    <div class="tracker-step {% if status_step >= 2 %}completed{% elif status_step == 1 %}active{% endif %}">
+      <div class="tracker-step-icon">{% if status_step >= 2 %}<i class="bi bi-check2"></i>{% else %}2{% endif %}</div>
+      <span class="tracker-step-label">2. Under Review</span>
+    </div>
+    <div class="tracker-step {% if status_step >= 3 %}completed{% elif status_step == 2 %}active{% endif %}">
+      <div class="tracker-step-icon">{% if status_step >= 3 %}<i class="bi bi-check2"></i>{% else %}3{% endif %}</div>
+      <span class="tracker-step-label">3. In Progress</span>
+    </div>
+    <div class="tracker-step {% if status_step == 4 %}completed{% endif %}">
+      <div class="tracker-step-icon">{% if status_step == 4 %}<i class="bi bi-check2"></i>{% else %}4{% endif %}</div>
+      <span class="tracker-step-label">4. Resolved</span>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Column: Details, Attachments & Rating -->
+  <div class="col-lg-7">
+    <!-- Description Card -->
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-2">Issue Description</h5>
+      <p class="text-secondary mb-3" style="white-space: pre-line;">{{ complaint.description }}</p>
+
+      {% if complaint.rejection_reason %}
+      <div class="alert alert-danger mb-0 small">
+        <strong>Notice from staff:</strong> {{ complaint.rejection_reason }}
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Attachments Card -->
+    {% if complaint.attachments %}
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-3">Attached Photo / Document</h5>
+      <div class="row g-2">
+        {% for att in complaint.attachments %}
+        <div class="col-sm-6">
+          <div class="card p-2 border d-flex flex-row align-items-center gap-2">
+            {% if 'image' in att.file_type %}
+              <img src="{{ att.url }}" alt="Attachment" style="width: 44px; height: 44px; object-fit: cover;" class="rounded">
+            {% else %}
+              <div class="bg-danger-subtle text-danger p-2 rounded fs-5"><i class="bi bi-file-earmark-pdf"></i></div>
+            {% endif %}
+            <div class="overflow-hidden">
+              <span class="small fw-semibold d-block text-truncate">{{ att.file_name }}</span>
+              <a href="{{ att.url }}" target="_blank" class="small text-primary text-decoration-none">View full &rarr;</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 5-Star Feedback Form (Once Resolved) -->
+    {% if complaint.status in ['Resolved', 'Closed'] %}
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-2"><i class="bi bi-star text-warning me-1"></i> Rate the Resolution</h5>
+      {% if complaint.feedback %}
+      <div class="p-3 bg-light rounded-3 border">
+        <div class="text-warning fs-5 mb-1">
+          {% for i in range(complaint.feedback.rating) %}★{% endfor %}{% for i in range(5 - complaint.feedback.rating) %}☆{% endfor %}
+        </div>
+        <p class="small text-dark mb-0">"{{ complaint.feedback.comments }}"</p>
+      </div>
+      {% else %}
+      <form action="{{ url_for('submit_feedback', complaint_no=complaint.complaint_no) }}" method="POST">
+        <p class="text-muted small mb-2">How satisfied are you with the repair?</p>
+        <div class="mb-3">
+          <div class="star-rating">
+            <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
+            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
+          </div>
+          <div id="ratingValueText" class="small text-muted mt-1">Select 1 to 5 stars</div>
+        </div>
+        <div class="mb-3">
+          <textarea name="comments" class="form-control" rows="2" placeholder="Write a short note on the service (optional)..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm px-3">
+          Send Rating
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Plain Words Actions: Cancel / Reopen -->
+    {% if complaint.status == 'Submitted' %}
+    <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+      <span class="small text-muted">Problem already fixed or filed by mistake?</span>
+      <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal">
+        Cancel Complaint
+      </button>
+    </div>
+
+    <!-- Simple Confirmation Modal for Destructive Action -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+          <div class="modal-header border-0 pb-0">
+            <h6 class="modal-title fw-bold text-dark">Cancel this complaint?</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body py-2">
+            <p class="small text-muted mb-0">This will withdraw complaint {{ complaint.complaint_no }} from our review queue.</p>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Keep</button>
+            <form action="{{ url_for('withdraw_complaint', complaint_no=complaint.complaint_no) }}" method="POST">
+              <button type="submit" class="btn btn-danger btn-sm">Yes, Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Status Updates & Remarks -->
+  <div class="col-lg-5">
+    <div class="ocms-card p-4">
+      <h5 class="fw-bold text-dark mb-3">Updates & Remarks</h5>
+      
+      <div class="timeline mb-4">
+        {% for comment in complaint.comments %}
+        <div class="timeline-item {% if loop.last %}active{% endif %}">
+          <div class="timeline-dot">
+            <i class="bi bi-dot fs-6"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <strong class="small text-dark">{{ comment.user_name }}</strong>
+              <span class="text-muted" style="font-size: 0.72rem;">{{ comment.created_at[:10] }}</span>
+            </div>
+            <p class="mb-0 small text-secondary">{{ comment.message }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Add Reply Message -->
+      {% if complaint.status not in ['Closed', 'Withdrawn'] %}
+      <form action="{{ url_for('add_comment', complaint_no=complaint.complaint_no) }}" method="POST" class="border-top pt-3">
+        <label class="form-label small fw-semibold">Add a message or reply</label>
+        <textarea name="message" class="form-control mb-2" rows="2" placeholder="Type a note for the technician..." required></textarea>
+        <button type="submit" class="btn btn-primary btn-sm px-3">
+          Send Message
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

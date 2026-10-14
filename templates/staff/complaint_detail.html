@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Resolution: {{ complaint.complaint_no }} | OCMS Staff{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('staff_complaints') }}" class="text-decoration-none small text-muted">
+    <i class="bi bi-arrow-left me-1"></i> Back to Tasks
+  </a>
+</div>
+
+<div class="ocms-card p-4 mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="text-muted small">Tracking Number:</span>
+        <strong class="font-monospace text-primary fs-5">{{ complaint.complaint_no }}</strong>
+      </div>
+      <h3 class="fw-bold text-dark mb-1">{{ complaint.subject }}</h3>
+      <div class="text-muted small">
+        <span><i class="bi bi-tag me-1"></i> {{ complaint.category_name }}</span>
+        {% if complaint.location %}
+        <span class="ms-3"><i class="bi bi-geo-alt me-1"></i> {{ complaint.location }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <span class="badge-status badge-{{ complaint.status | lower | replace(' ', '') }} fs-6 px-3 py-2">
+        {{ complaint.status }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-2">Issue Description</h5>
+      <p class="text-secondary small mb-3" style="white-space: pre-line;">{{ complaint.description }}</p>
+
+      {% if complaint.rejection_reason %}
+      <div class="alert alert-danger mb-0 small">
+        <strong>Rejection Note on Record:</strong> {{ complaint.rejection_reason }}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if complaint.attachments %}
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-3">Evidence Photo / File</h5>
+      <div class="row g-2">
+        {% for att in complaint.attachments %}
+        <div class="col-sm-6">
+          <div class="card p-2 border d-flex flex-row align-items-center gap-2">
+            {% if 'image' in att.file_type %}
+              <img src="{{ att.url }}" alt="Attachment" style="width: 44px; height: 44px; object-fit: cover;" class="rounded">
+            {% else %}
+              <div class="bg-danger-subtle text-danger p-2 rounded fs-5"><i class="bi bi-file-earmark-pdf"></i></div>
+            {% endif %}
+            <div class="overflow-hidden">
+              <span class="small fw-semibold d-block text-truncate">{{ att.file_name }}</span>
+              <a href="{{ att.url }}" target="_blank" class="small text-primary text-decoration-none">View full &rarr;</a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-5">
+    <!-- Staff Update Desk -->
+    <div class="ocms-card p-4 mb-4">
+      <h5 class="fw-bold text-dark mb-3">Update Progress</h5>
+      
+      <form action="{{ url_for('staff_update_status', complaint_no=complaint.complaint_no) }}" method="POST">
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Progress Status</label>
+          <select name="status" class="form-select" id="staffStatusSelect" required>
+            <option value="In Progress" {% if complaint.status == 'In Progress' %}selected{% endif %}>In Progress (Work started)</option>
+            <option value="Resolved" {% if complaint.status == 'Resolved' %}selected{% endif %}>Resolved (Problem fixed)</option>
+            <option value="Rejected" {% if complaint.status == 'Rejected' %}selected{% endif %}>Rejected (Cannot resolve / Invalid)</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label small fw-semibold">Resolution Notes</label>
+          <textarea name="resolution_notes" class="form-control" rows="3" placeholder="Describe the fix or actions taken on site..." required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+          Save Progress
+        </button>
+      </form>
+    </div>
+
+    <!-- Timeline Remarks -->
+    <div class="ocms-card p-4">
+      <h5 class="fw-bold text-dark mb-3">Remarks & Conversation</h5>
+      <div class="timeline">
+        {% for comment in complaint.comments %}
+        <div class="timeline-item {% if loop.last %}active{% endif %}">
+          <div class="timeline-dot"><i class="bi bi-dot"></i></div>
+          <div class="timeline-content">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <strong class="small text-dark">{{ comment.user_name }}</strong>
+              <span class="text-muted" style="font-size: 0.72rem;">{{ comment.created_at[:10] }}</span>
+            </div>
+            <p class="mb-0 small text-secondary">{{ comment.message }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

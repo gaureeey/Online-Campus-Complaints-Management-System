@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Complaint Submitted Successfully | OCMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+  <div class="col-lg-8 col-xl-7">
+    <div class="ocms-card p-4 p-md-5 text-center fade-in">
+      
+      <!-- Big Friendly Checkmark -->
+      <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle mb-3" style="width: 72px; height: 72px; font-size: 2.2rem;">
+        <i class="bi bi-check2"></i>
+      </div>
+
+      <h2 class="fw-bold text-dark mb-2">Complaint Submitted Successfully!</h2>
+      <p class="text-secondary mb-4">
+        Your issue has been registered in the system. Use the tracking number below to follow its resolution progress.
+      </p>
+
+      <!-- Success Token Card with Large Tracking Number & Copy Button -->
+      <div class="success-token-card mb-4">
+        <span class="text-muted small fw-semibold text-uppercase d-block mb-2">Your Tracking Number</span>
+        <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mb-3">
+          <span class="big-tracking-token" id="complaintToken">{{ complaint.complaint_no }}</span>
+          <button type="button" class="btn btn-outline-primary btn-copy-token" data-token="{{ complaint.complaint_no }}">
+            <i class="bi bi-clipboard me-1"></i> Copy
+          </button>
+        </div>
+        <p class="small text-muted mb-0">
+          Save this number or check your registered email ({{ complaint.user_email }}) for updates.
+        </p>
+      </div>
+
+      <!-- Quick Issue Details Summary -->
+      <div class="p-3 bg-light rounded-3 border text-start mb-4 small">
+        <div class="row g-2">
+          <div class="col-sm-6">
+            <span class="text-muted d-block">Issue Title:</span>
+            <strong class="text-dark">{{ complaint.subject }}</strong>
+          </div>
+          <div class="col-sm-6">
+            <span class="text-muted d-block">Category:</span>
+            <span class="badge bg-white border text-dark">{{ complaint.category_name }}</span>
+          </div>
+          {% if complaint.location %}
+          <div class="col-12">
+            <span class="text-muted d-block">Location:</span>
+            <span class="text-dark"><i class="bi bi-geo-alt me-1 text-primary"></i> {{ complaint.location }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-wrap justify-content-center gap-3">
+        <a href="{{ url_for('complaint_detail', complaint_no=complaint.complaint_no) }}" class="btn btn-primary btn-lg px-4 shadow-sm">
+          <i class="bi bi-search me-1"></i> Track This Complaint
+        </a>
+        <a href="{{ url_for('my_complaints') }}" class="btn btn-light btn-lg px-4 border">
+          <i class="bi bi-list-check me-1"></i> View My Complaints
+        </a>
+      </div>
+
+      <!-- What Happens Next strip -->
+      <div class="mt-5 pt-4 border-top text-start">
+        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-info-circle text-primary me-1"></i> What happens next?</h6>
+        <div class="row g-3 small">
+          <div class="col-md-4">
+            <strong class="d-block text-dark">1. Review</strong>
+            <span class="text-muted">Campus administration reviews your report.</span>
+          </div>
+          <div class="col-md-4">
+            <strong class="d-block text-dark">2. Technician Visits</strong>
+            <span class="text-muted">A specialized officer is assigned to inspect on-site.</span>
+          </div>
+          <div class="col-md-4">
+            <strong class="d-block text-dark">3. Resolution & Rating</strong>
+            <span class="text-muted">You receive an alert and rate the resolution quality.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

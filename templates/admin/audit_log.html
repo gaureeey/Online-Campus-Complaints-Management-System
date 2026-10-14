@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Audit Trail | OCMS Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">Administrative Audit Trail</h2>
+    <p class="text-muted small mb-0">Tamper-evident system activity records for governance and compliance review (FR-3.10).</p>
+  </div>
+  <span class="badge bg-secondary-subtle text-dark border px-3 py-2">
+    <i class="bi bi-shield-lock me-1"></i> FR-3.10 Implemented
+  </span>
+</div>
+
+<div class="ocms-card p-4">
+  <div class="table-responsive">
+    <table class="table ocms-table align-middle filterable-table">
+      <thead>
+        <tr>
+          <th>Log ID</th>
+          <th>Actor / User</th>
+          <th>Role</th>
+          <th>Action Executed</th>
+          <th>Target Record</th>
+          <th>Action Details</th>
+          <th>Timestamp</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in audit_logs %}
+        <tr>
+          <td><code>#LOG-{{ log.log_id }}</code></td>
+          <td><strong class="text-dark">{{ log.user_name }}</strong></td>
+          <td><span class="badge bg-light text-dark border">{{ log.user_role }}</span></td>
+          <td><span class="badge bg-primary-subtle text-primary fw-bold">{{ log.action }}</span></td>
+          <td><strong class="text-secondary">{{ log.target_id }}</strong></td>
+          <td class="small text-secondary">{{ log.details }}</td>
+          <td class="small text-muted">{{ log.timestamp }}</td>
+          <td><code class="small">{{ log.ip_address }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

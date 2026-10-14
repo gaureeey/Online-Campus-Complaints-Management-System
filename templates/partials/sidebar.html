@@ -1,0 +1,71 @@
+<aside class="ocms-sidebar">
+  <div class="sidebar-sticky">
+    <div>
+      {% if session.get('role') == 'admin' %}
+        <!-- ADMIN NAVIGATION (5 Items Max) -->
+        <div class="sidebar-section-title">Admin Management</div>
+        <a href="{{ url_for('admin_dashboard') }}" class="sidebar-nav-item {% if active_page == 'admin_dashboard' %}active{% endif %}">
+          <i class="bi bi-speedometer2"></i> Overview
+        </a>
+        <a href="{{ url_for('admin_complaints') }}" class="sidebar-nav-item {% if active_page == 'admin_complaints' %}active{% endif %}">
+          <i class="bi bi-inbox"></i> All Complaints
+          <span class="badge bg-danger rounded-pill ms-auto" style="font-size: 0.7rem;">1 Alert</span>
+        </a>
+        <a href="{{ url_for('admin_users') }}" class="sidebar-nav-item {% if active_page == 'admin_users' %}active{% endif %}">
+          <i class="bi bi-people"></i> Users & Staff
+        </a>
+        <a href="{{ url_for('admin_categories') }}" class="sidebar-nav-item {% if active_page == 'admin_categories' %}active{% endif %}">
+          <i class="bi bi-tag"></i> Categories
+        </a>
+        <a href="{{ url_for('admin_reports') }}" class="sidebar-nav-item {% if active_page == 'admin_reports' %}active{% endif %}">
+          <i class="bi bi-file-earmark-text"></i> Reports
+        </a>
+
+      {% elif session.get('role') == 'staff' %}
+        <!-- STAFF NAVIGATION (4 Items Max) -->
+        <div class="sidebar-section-title">Staff Workspace</div>
+        <a href="{{ url_for('staff_dashboard') }}" class="sidebar-nav-item {% if active_page == 'staff_dashboard' %}active{% endif %}">
+          <i class="bi bi-speedometer2"></i> Overview
+        </a>
+        <a href="{{ url_for('staff_complaints') }}" class="sidebar-nav-item {% if active_page == 'staff_complaints' %}active{% endif %}">
+          <i class="bi bi-wrench"></i> Assigned Tasks
+          <span class="badge bg-primary rounded-pill ms-auto" style="font-size: 0.7rem;">2 Active</span>
+        </a>
+        <a href="{{ url_for('track_public') }}" class="sidebar-nav-item {% if active_page == 'track_public' %}active{% endif %}">
+          <i class="bi bi-search"></i> Track by Number
+        </a>
+        <a href="{{ url_for('profile') }}" class="sidebar-nav-item {% if active_page == 'profile' %}active{% endif %}">
+          <i class="bi bi-person"></i> My Profile
+        </a>
+
+      {% else %}
+        <!-- CITIZEN / USER NAVIGATION (5 Items Max) -->
+        <div class="sidebar-section-title">Main Menu</div>
+        <a href="{{ url_for('user_dashboard') }}" class="sidebar-nav-item {% if active_page == 'user_dashboard' %}active{% endif %}">
+          <i class="bi bi-house"></i> Dashboard
+        </a>
+        <a href="{{ url_for('submit_complaint') }}" class="sidebar-nav-item {% if active_page == 'submit_complaint' %}active{% endif %}">
+          <i class="bi bi-plus-circle text-primary"></i> Submit a Complaint
+        </a>
+        <a href="{{ url_for('my_complaints') }}" class="sidebar-nav-item {% if active_page == 'my_complaints' %}active{% endif %}">
+          <i class="bi bi-card-checklist"></i> My Complaints
+        </a>
+        <a href="{{ url_for('track_public') }}" class="sidebar-nav-item {% if active_page == 'track_public' %}active{% endif %}">
+          <i class="bi bi-search"></i> Track by Number
+        </a>
+        <a href="{{ url_for('profile') }}" class="sidebar-nav-item {% if active_page == 'profile' %}active{% endif %}">
+          <i class="bi bi-person"></i> My Profile
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Clean Bottom Helpdesk Callout -->
+    <div class="mt-4 pt-3 border-top">
+      <div class="p-3 bg-light rounded-3 text-center border">
+        <i class="bi bi-headset fs-4 text-primary d-block mb-1"></i>
+        <div class="fw-semibold small text-dark">Need help?</div>
+        <div class="text-muted" style="font-size: 0.78rem;">Ext: 4022 (Campus Desk)</div>
+      </div>
+    </div>
+  </div>
+</aside>

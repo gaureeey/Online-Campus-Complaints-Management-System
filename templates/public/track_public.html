@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Track a Complaint | OCMS{% endblock %}
+
+{% block public_content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <!-- Search Box Card -->
+      <div class="ocms-card p-4 p-md-5 mb-4 text-center">
+        <h2 class="fw-bold text-dark mb-2">Track a Complaint</h2>
+        <p class="text-secondary small mb-4">
+          Enter your Tracking Number to see live milestones and technician updates.
+        </p>
+
+        <form action="{{ url_for('track_public') }}" method="GET" class="max-w-500 mx-auto mb-3">
+          <div class="input-group input-group-lg shadow-sm">
+            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" name="complaint_no" class="form-control border-start-0" placeholder="e.g. OCMS-2026-0001" value="{{ complaint.complaint_no if complaint else query_no }}" required>
+            <button class="btn btn-primary px-4 fw-semibold" type="submit">Track</button>
+          </div>
+        </form>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-center align-items-center">
+          <span class="text-muted small">Sample numbers:</span>
+          <a href="{{ url_for('track_public', complaint_no='OCMS-2026-0001') }}" class="badge bg-light text-primary border text-decoration-none">OCMS-2026-0001 (In Progress)</a>
+          <a href="{{ url_for('track_public', complaint_no='OCMS-2026-0003') }}" class="badge bg-light text-success border text-decoration-none">OCMS-2026-0003 (Resolved)</a>
+        </div>
+      </div>
+
+      {% if complaint %}
+      <!-- Complaint Result Card -->
+      <div class="ocms-card p-4 p-md-5">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 border-bottom pb-3 mb-4">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="text-muted small">Tracking Number:</span>
+              <strong class="font-monospace text-primary fs-5">{{ complaint.complaint_no }}</strong>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">{{ complaint.subject }}</h4>
+            <div class="text-muted small">
+              <span><i class="bi bi-tag me-1"></i> {{ complaint.category_name }}</span>
+              {% if complaint.location %}
+              <span class="ms-3"><i class="bi bi-geo-alt me-1"></i> {{ complaint.location }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <div>
+            <span class="badge-status badge-{{ complaint.status | lower | replace(' ', '') }} px-3 py-2 fs-6">
+              {{ complaint.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 4-Step Progress Tracker -->
+        {% set status_step = 1 %}
+        {% if complaint.status in ['Assigned'] %}
+          {% set status_step = 2 %}
+        {% elif complaint.status in ['In Progress', 'Reopened'] %}
+          {% set status_step = 3 %}
+        {% elif complaint.status in ['Resolved', 'Closed'] %}
+          {% set status_step = 4 %}
+        {% endif %}
+
+        <div class="progress-tracker-4step mb-4">
+          <div class="tracker-progress-fill" style="width: {% if status_step == 1 %}0%{% elif status_step == 2 %}33%{% elif status_step == 3 %}66%{% else %}100%{% endif %};"></div>
+          
+          <div class="tracker-step {% if status_step >= 1 %}completed{% endif %}">
+            <div class="tracker-step-icon"><i class="bi bi-check2"></i></div>
+            <span class="tracker-step-label">1. Submitted</span>
+          </div>
+          <div class="tracker-step {% if status_step >= 2 %}completed{% elif status_step == 1 %}active{% endif %}">
+            <div class="tracker-step-icon">{% if status_step >= 2 %}<i class="bi bi-check2"></i>{% else %}2{% endif %}</div>
+            <span class="tracker-step-label">2. Under Review</span>
+          </div>
+          <div class="tracker-step {% if status_step >= 3 %}completed{% elif status_step == 2 %}active{% endif %}">
+            <div class="tracker-step-icon">{% if status_step >= 3 %}<i class="bi bi-check2"></i>{% else %}3{% endif %}</div>
+            <span class="tracker-step-label">3. In Progress</span>
+          </div>
+          <div class="tracker-step {% if status_step == 4 %}completed{% endif %}">
+            <div class="tracker-step-icon">{% if status_step == 4 %}<i class="bi bi-check2"></i>{% else %}4{% endif %}</div>
+            <span class="tracker-step-label">4. Resolved</span>
+          </div>
+        </div>
+
+        <!-- Description Box -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-dark small">Reported Details:</h6>
+          <div class="p-3 bg-light rounded-3 text-secondary small">
+            {{ complaint.description }}
+          </div>
+        </div>
+
+        <!-- Latest Update / Note -->
+        {% if complaint.comments %}
+        <div class="p-3 bg-light rounded-3 border">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <strong class="small text-dark"><i class="bi bi-chat-quote me-1 text-primary"></i> Latest Update:</strong>
+            <span class="text-muted" style="font-size: 0.75rem;">{{ complaint.comments[-1].created_at[:10] }}</span>
+          </div>
+          <p class="small text-secondary mb-0">{{ complaint.comments[-1].message }}</p>
+        </div>
+        {% endif %}
+
+        {% if session.get('role') %}
+        <div class="mt-4 text-end">
+          <a href="{{ url_for('complaint_detail', complaint_no=complaint.complaint_no) }}" class="btn btn-outline-primary btn-sm">
+            Open Full Complaint Page &rarr;
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      {% elif query_no %}
+      <!-- Not Found Empty State -->
+      <div class="ocms-card p-5 text-center">
+        <i class="bi bi-search text-muted display-5 d-block mb-2"></i>
+        <h5 class="fw-bold text-dark mb-1">No complaint found for "{{ query_no }}"</h5>
+        <p class="text-muted small mb-0">Please check the tracking number and try again. Example: <code>OCMS-2026-0001</code></p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}

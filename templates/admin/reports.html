@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports | OCMS Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h2 class="fw-bold text-dark mb-1">Grievance Reports</h2>
+    <p class="text-muted small mb-0">Summary of resolved and open complaints across departments.</p>
+  </div>
+  <button type="button" id="exportCsvBtn" class="btn btn-outline-primary">
+    <i class="bi bi-download me-1"></i> Download CSV
+  </button>
+</div>
+
+<!-- Clean Date Filter -->
+<div class="ocms-card p-3 mb-4">
+  <form action="{{ url_for('admin_reports') }}" method="GET" class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <select name="category" class="form-select">
+        <option value="all">All Categories</option>
+        {% for cat in categories %}
+        <option value="{{ cat.category_id }}" {% if current_category|string == cat.category_id|string %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-5">
+      <select name="status" class="form-select">
+        <option value="all">All Statuses</option>
+        <option value="Submitted">Submitted (New)</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+    </div>
+    <div class="col-md-2 text-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+</div>
+
+<!-- 3 Clean Summary Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <span class="text-muted small fw-medium">Total In Report</span>
+      <h3 class="fw-bold text-dark mt-2 mb-0">{{ complaints|length }}</h3>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <span class="text-muted small fw-medium">Resolution Rate</span>
+      <h3 class="fw-bold text-success mt-2 mb-0">92%</h3>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="stat-card">
+      <span class="text-muted small fw-medium">Average Rating</span>
+      <h3 class="fw-bold text-warning mt-2 mb-0">4.8 / 5.0</h3>
+    </div>
+  </div>
+</div>
+
+<!-- Report Table -->
+<div class="ocms-card p-4">
+  <div class="table-responsive">
+    <table class="table align-middle" id="reportsTable">
+      <thead>
+        <tr>
+          <th>Tracking Number</th>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Assigned Staff</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comp in complaints %}
+        <tr>
+          <td><strong class="font-monospace text-primary">{{ comp.complaint_no }}</strong></td>
+          <td class="small text-muted">{{ comp.created_at[:10] }}</td>
+          <td>{{ comp.category_name }}</td>
+          <td>
+            <span class="badge-status badge-{{ comp.status | lower | replace(' ', '') }}">
+              {{ comp.status }}
+            </span>
+          </td>
+          <td>{{ comp.assigned_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
