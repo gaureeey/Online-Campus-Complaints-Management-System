@@ -1,19 +1,21 @@
 /**
  * Online Complaint Management System (OCMS)
- * Single Clean Dashboard Chart (Resolution Trend)
+ * Dynamic Dashboard Chart (Resolution Trend via /admin/api/stats)
  */
 
 document.addEventListener('DOMContentLoaded', function () {
-  const trendCtx = document.getElementById('singleTrendChart');
-  if (trendCtx) {
-    new Chart(trendCtx, {
+  const trendCanvas = document.getElementById('singleTrendChart');
+  if (!trendCanvas) return;
+
+  function renderChart(labels, resolvedData, newData) {
+    new Chart(trendCanvas, {
       type: 'line',
       data: {
-        labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+        labels: labels,
         datasets: [
           {
             label: 'Complaints Resolved',
-            data: [28, 41, 52, 68, 60, 78],
+            data: resolvedData,
             borderColor: '#0d9488', // Soft Teal
             backgroundColor: 'rgba(13, 148, 136, 0.08)',
             fill: true,
@@ -24,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
           },
           {
             label: 'New Complaints',
-            data: [32, 45, 58, 72, 64, 85],
+            data: newData,
             borderColor: '#4338ca', // Deep Indigo
             backgroundColor: 'transparent',
             tension: 0.35,
@@ -57,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
               color: '#f1f5f9'
             },
             ticks: {
+              precision: 0,
               font: {
                 family: "'Inter', sans-serif"
               }
@@ -76,4 +79,25 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  // Attempt to fetch live statistics from backend
+  fetch('/admin/api/stats')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Stats API returned ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.labels && data.labels.length > 0) {
+        renderChart(data.labels, data.resolved_complaints, data.new_complaints);
+      } else {
+        // Fallback default sample trend
+        renderChart(['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], [4, 6, 8, 12, 10, 14], [5, 7, 9, 14, 11, 16]);
+      }
+    })
+    .catch(() => {
+      // Graceful fallback if guest or non-admin session
+      renderChart(['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], [4, 6, 8, 12, 10, 14], [5, 7, 9, 14, 11, 16]);
+    });
 });

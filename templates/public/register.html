@@ -14,26 +14,32 @@
         </div>
 
         <form action="{{ url_for('register') }}" method="POST" class="needs-validation">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="mb-3">
             <label for="regName" class="form-label">Full Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="regName" name="name" placeholder="e.g. Rahul Sharma" required>
+            <input type="text" class="form-control" id="regName" name="name" placeholder="e.g. Rahul Sharma" required value="{{ request.form.get('name', '') }}">
           </div>
 
           <div class="mb-3">
             <label for="regEmail" class="form-label">Email Address <span class="text-danger">*</span></label>
-            <input type="email" class="form-control" id="regEmail" name="email" placeholder="student@campus.edu" required>
+            <input type="email" class="form-control" id="regEmail" name="email" placeholder="student@campus.edu" required value="{{ request.form.get('email', '') }}">
             <div class="form-text">Used to send you resolution alerts and notes.</div>
           </div>
 
           <div class="mb-3">
             <label for="regPhone" class="form-label">Mobile Phone <span class="text-danger">*</span></label>
-            <input type="tel" class="form-control" id="regPhone" name="phone" placeholder="+91 98765 43210" required>
+            <input type="tel" class="form-control" id="regPhone" name="phone" placeholder="+91 98765 43210" required value="{{ request.form.get('phone', '') }}">
+          </div>
+
+          <div class="mb-3">
+            <label for="regPassword" class="form-label">Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="regPassword" name="password" placeholder="At least 8 characters (with numbers)" required minlength="8">
+            <div class="form-text">Choose a secure password with letters and numbers (FR-1.2).</div>
           </div>
 
           <div class="mb-4">
-            <label for="regPassword" class="form-label">Password <span class="text-danger">*</span></label>
-            <input type="password" class="form-control" id="regPassword" name="password" placeholder="At least 8 characters" required minlength="8">
-            <div class="form-text">Choose a secure password with letters and numbers.</div>
+            <label for="regConfirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+            <input type="password" class="form-control" id="regConfirmPassword" name="confirm_password" placeholder="Repeat password" required minlength="8">
           </div>
 
           <button type="submit" class="btn btn-primary w-100 py-2 mb-3 shadow-sm">

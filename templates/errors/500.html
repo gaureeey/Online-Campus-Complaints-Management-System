@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}System Error | OCMS{% endblock %}
+
+{% block public_content %}
+<div class="container py-5 text-center">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+      <div class="ocms-card p-5 bg-white shadow-sm">
+        <div class="rounded-circle bg-danger-subtle text-danger d-inline-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; font-size: 2rem;">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h2 class="fw-bold text-dark mb-2">Internal Server Error (500)</h2>
+        <p class="text-muted small mb-4">An unexpected error occurred while processing your transaction. The administrative team has been notified.</p>
+        <div class="d-grid gap-2">
+          <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+            <i class="bi bi-house-door me-1"></i> Return to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

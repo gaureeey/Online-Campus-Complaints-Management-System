@@ -44,6 +44,9 @@ def smart_url_for(endpoint, **values):
         return flask_url_for(endpoint, **values)
 
 
+url_for = smart_url_for
+
+
 def create_app(config_name='default'):
     """App Factory pattern creating configured Flask instance."""
     app = Flask(
@@ -105,13 +108,13 @@ def create_app(config_name='default'):
         - staff: signs in Priya Nair (Staff Officer)
         - admin: signs in Dr. Arvind Mehta (Administrator)
         """
+        from flask_login import logout_user
         if role == 'guest':
-            session.clear()
-            from flask_login import logout_user
             logout_user()
+            session.clear()
             flash('Switched to Guest (Public Visitor) view.', 'info')
-            return redirect(url_for('main.index'))
-        
+            return redirect(smart_url_for('main.index'))
+
         target_email = {
             'user': 'user@example.com',
             'staff': 'staff@example.com',
@@ -123,8 +126,9 @@ def create_app(config_name='default'):
             if not demo_user:
                 # Fallback to any user with that role
                 demo_user = User.query.filter_by(role=role).first()
-            
+
             if demo_user:
+                logout_user()
                 login_user(demo_user)
                 session['role'] = demo_user.role
                 session['user_id'] = demo_user.id
@@ -132,14 +136,15 @@ def create_app(config_name='default'):
                 flash(f"Switched persona to: {demo_user.name} ({demo_user.role.title()}).", "success")
 
                 if demo_user.role == 'admin':
-                    return redirect(url_for('admin.admin_dashboard'))
+                    return redirect(smart_url_for('admin.admin_dashboard'))
                 elif demo_user.role == 'staff':
-                    return redirect(url_for('staff.staff_dashboard'))
+                    return redirect(smart_url_for('staff.staff_dashboard'))
                 else:
-                    return redirect(url_for('user.user_dashboard'))
+                    return redirect(smart_url_for('user.user_dashboard'))
 
         flash(f"Role '{role}' not recognized or no demo user found in database.", "warning")
-        return redirect(url_for('main.index'))
+        return redirect(smart_url_for('main.index'))
+
 
     # Custom Error Handlers (SRS NFR-4)
     @app.errorhandler(403)

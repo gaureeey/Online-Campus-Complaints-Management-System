@@ -9,6 +9,7 @@
     <p class="text-muted small mb-0">Status updates and messages regarding your complaints.</p>
   </div>
   <form action="{{ url_for('mark_notifications_read') }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="btn btn-light btn-sm border">
       <i class="bi bi-check2-all me-1"></i> Mark All as Read
     </button>
@@ -26,11 +27,12 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-1">
           <strong class="text-dark small">{{ notif.title }}</strong>
           <span class="text-muted" style="font-size: 0.75rem;">{{ notif.time_ago }}</span>
-        </div>
         <p class="text-secondary small mb-2">{{ notif.message }}</p>
+        {% if notif.complaint_no %}
         <a href="{{ url_for('complaint_detail', complaint_no=notif.complaint_no) }}" class="btn btn-sm btn-light border py-1 px-2 small">
           View Complaint &rarr;
         </a>
+        {% endif %}
       </div>
     </div>
     {% endfor %}

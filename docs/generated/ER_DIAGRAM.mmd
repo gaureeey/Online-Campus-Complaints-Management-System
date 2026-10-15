@@ -1,0 +1,101 @@
+erDiagram
+    users ||--o{ complaints : "files"
+    users ||--o{ complaints : "assigned_to"
+    users ||--o{ complaint_updates : "authors"
+    users ||--o{ feedback : "submits"
+    users ||--o{ notifications : "receives"
+    users ||--o{ audit_logs : "performs"
+
+    categories ||--o{ complaints : "categorizes"
+
+    complaints ||--o{ complaint_updates : "tracks_history"
+    complaints ||--o| feedback : "receives_rating"
+    complaints ||--o{ notifications : "generates"
+    complaints ||--o{ complaints : "parent_duplicate"
+
+    users {
+        int id PK
+        string email UK
+        string name
+        string role
+        string phone
+        string department
+        string password_hash
+        boolean is_active
+        int failed_attempts
+        datetime locked_until
+        datetime created_at
+    }
+
+    departments {
+        int id PK
+        string name UK
+    }
+
+    categories {
+        int id PK
+        string name UK
+        text description
+        int sla_hours
+        string icon
+        boolean is_active
+        string default_priority
+    }
+
+    complaints {
+        int id PK
+        string tracking_number UK
+        int user_id FK
+        int category_id FK
+        int assigned_to FK
+        string title
+        text description
+        string location
+        string priority
+        string status
+        string attachment_path
+        boolean is_anonymous
+        int parent_id FK
+        text rejection_reason
+        datetime created_at
+        datetime due_at
+        datetime resolved_at
+    }
+
+    complaint_updates {
+        int id PK
+        int complaint_id FK
+        int updated_by FK
+        string old_status
+        string new_status
+        text remark
+        datetime created_at
+    }
+
+    feedback {
+        int id PK
+        int complaint_id FK "UK"
+        int user_id FK
+        int rating
+        text comment
+        datetime created_at
+    }
+
+    notifications {
+        int id PK
+        int user_id FK
+        int complaint_id FK
+        string message
+        boolean is_read
+        datetime created_at
+    }
+
+    audit_logs {
+        int id PK
+        int user_id FK
+        string action
+        string target_id
+        text details
+        string ip_address
+        datetime created_at
+    }

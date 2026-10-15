@@ -62,6 +62,7 @@
           </td>
           <td class="text-end">
             <form action="{{ url_for('admin_toggle_user', user_id=u.user_id) }}" method="POST" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               {% if u.is_active %}
                 <button type="submit" class="btn btn-sm btn-light border py-1 px-2 text-danger" title="Deactivate">Deactivate</button>
               {% else %}
@@ -85,6 +86,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form action="{{ url_for('admin_add_user') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>

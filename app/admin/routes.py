@@ -130,8 +130,12 @@ def admin_api_stats():
             'labels': cat_labels,
             'counts': cat_counts
         },
-        'monthly_trend': trend_data
+        'monthly_trend': trend_data,
+        'labels': trend_data['labels'],
+        'new_complaints': trend_data['new_complaints'],
+        'resolved_complaints': trend_data['resolved_complaints']
     })
+
 
 
 @admin_bp.route('/admin/complaints')
@@ -640,3 +644,4 @@ def admin_audit_log():
         active_page='admin_audit_log',
         audit_logs=audit_logs
     )
+

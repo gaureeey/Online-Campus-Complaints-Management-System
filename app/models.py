@@ -347,6 +347,18 @@ class Notification(db.Model):
     def complaint_no(self):
         return self.complaint.tracking_number if self.complaint else None
 
+    @property
+    def title(self):
+        return "Complaint Update"
+
+    @property
+    def icon(self):
+        return "bi-bell"
+
+    @property
+    def time_ago(self):
+        return "Recently"
+
     def __repr__(self):
         return f"<Notification for User {self.user_id}>"
 

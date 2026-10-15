@@ -75,6 +75,7 @@
       <h5 class="fw-bold text-dark mb-3">Update Progress</h5>
       
       <form action="{{ url_for('staff_update_status', complaint_no=complaint.complaint_no) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="mb-3">
           <label class="form-label small fw-semibold">Progress Status</label>
           <select name="status" class="form-select" id="staffStatusSelect" required>

@@ -22,6 +22,7 @@
     <!-- Main Clean Card Form -->
     <div class="ocms-card p-4 p-md-5 bg-white">
       <form action="{{ url_for('submit_complaint') }}" method="POST" enctype="multipart/form-data" id="complaintForm" class="needs-validation">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         
         <!-- 1. Category -->
         <div class="mb-4">
