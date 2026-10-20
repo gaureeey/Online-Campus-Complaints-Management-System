@@ -22,13 +22,20 @@ class Config:
     PORT = int(os.environ.get('PORT', 5050))
 
 
+def get_database_uri():
+    """Retrieve database URI, formatting postgres:// to postgresql:// for SQLAlchemy."""
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url:
+        if db_url.startswith('postgres://'):
+            db_url = db_url.replace('postgres://', 'postgresql://', 1)
+        return db_url
+    return f"sqlite:///{os.path.join(INSTANCE_DIR, 'complaints.db')}"
+
+
 class DevelopmentConfig(Config):
     """Development environment configuration."""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        f"sqlite:///{os.path.join(INSTANCE_DIR, 'complaints.db')}"
-    )
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
 
 
 class TestingConfig(Config):
@@ -43,10 +50,7 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     """Production environment configuration."""
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        f"sqlite:///{os.path.join(INSTANCE_DIR, 'complaints.db')}"
-    )
+    SQLALCHEMY_DATABASE_URI = get_database_uri()
 
 
 config = {

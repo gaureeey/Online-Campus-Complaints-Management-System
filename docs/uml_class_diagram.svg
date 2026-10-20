@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 950" width="100%" height="100%" style="background-color: #0f172a; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <filter id="cls-shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+    <marker id="diamond" viewBox="0 0 16 16" refX="0" refY="8" markerWidth="9" markerHeight="9">
+      <polygon points="8,0 16,8 8,16 0,8" fill="#8b5cf6" />
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="70" fill="#1e293b" />
+  <text x="40" y="44" fill="#ffffff" font-size="20" font-weight="700">Online Campus Complaints Management System (OCMS)</text>
+  <text x="1460" y="44" fill="#38bdf8" font-size="14" font-weight="600" text-anchor="end">UML 2.5 Class Domain Model Diagram</text>
+
+  <!-- Class 1: User -->
+  <g transform="translate(60, 100)">
+    <rect x="0" y="0" width="280" height="270" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="280" height="34" rx="8" fill="#0369a1" />
+    <text x="140" y="23" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">User (Entity / UserMixin)</text>
+    <text x="14" y="56" fill="#93c5fd" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#93c5fd" font-size="11">+ string name</text>
+    <text x="14" y="92" fill="#93c5fd" font-size="11">+ string email [UK]</text>
+    <text x="14" y="110" fill="#93c5fd" font-size="11">+ string role ("user","staff","admin")</text>
+    <text x="14" y="128" fill="#93c5fd" font-size="11">+ string phone</text>
+    <text x="14" y="146" fill="#93c5fd" font-size="11">+ string password_hash</text>
+    <text x="14" y="164" fill="#93c5fd" font-size="11">+ int failed_attempts</text>
+    <text x="14" y="182" fill="#93c5fd" font-size="11">+ datetime locked_until</text>
+    <line x1="0" y1="194" x2="280" y2="194" stroke="#334155" stroke-width="1.5" />
+    <text x="14" y="214" fill="#e2e8f0" font-size="11">+ set_password(pwd): void</text>
+    <text x="14" y="232" fill="#e2e8f0" font-size="11">+ check_password(pwd): bool</text>
+    <text x="14" y="250" fill="#e2e8f0" font-size="11">+ is_locked(): bool</text>
+  </g>
+
+  <!-- Class 2: Department -->
+  <g transform="translate(60, 420)">
+    <rect x="0" y="0" width="280" height="110" rx="8" fill="#1e293b" stroke="#0ea5e9" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="280" height="32" rx="8" fill="#0284c7" />
+    <text x="140" y="22" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Department</text>
+    <text x="14" y="56" fill="#7dd3fc" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#7dd3fc" font-size="11">+ string name [UK]</text>
+  </g>
+
+  <!-- Class 3: Category -->
+  <g transform="translate(60, 580)">
+    <rect x="0" y="0" width="280" height="190" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="280" height="32" rx="8" fill="#047857" />
+    <text x="140" y="22" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Category (Lookup / SLA)</text>
+    <text x="14" y="56" fill="#a7f3d0" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#a7f3d0" font-size="11">+ string name [UK]</text>
+    <text x="14" y="92" fill="#a7f3d0" font-size="11">+ int sla_hours (Default 48h)</text>
+    <text x="14" y="110" fill="#a7f3d0" font-size="11">+ string default_priority</text>
+    <text x="14" y="128" fill="#a7f3d0" font-size="11">+ bool is_active</text>
+    <line x1="0" y1="140" x2="280" y2="140" stroke="#334155" stroke-width="1.5" />
+    <text x="14" y="162" fill="#e2e8f0" font-size="11">+ complaint_count(): int</text>
+  </g>
+
+  <!-- Class 4: Complaint (Central) -->
+  <g transform="translate(450, 100)">
+    <rect x="0" y="0" width="400" height="420" rx="8" fill="#182234" stroke="#f59e0b" stroke-width="2.5" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="400" height="36" rx="8" fill="#b45309" />
+    <text x="200" y="24" fill="#ffffff" font-size="15" font-weight="800" text-anchor="middle">Complaint (Core Grievance Entity)</text>
+    <text x="16" y="60" fill="#fde68a" font-size="11">+ int id [PK]</text>
+    <text x="16" y="78" fill="#fde68a" font-size="11">+ string tracking_number [UK: OCMS-YYYY-XXXX]</text>
+    <text x="16" y="96" fill="#fde68a" font-size="11">+ int user_id [FK -&gt; users.id]</text>
+    <text x="16" y="114" fill="#fde68a" font-size="11">+ int category_id [FK -&gt; categories.id]</text>
+    <text x="16" y="132" fill="#fde68a" font-size="11">+ int assigned_to [FK -&gt; users.id, Nullable]</text>
+    <text x="16" y="150" fill="#fde68a" font-size="11">+ string title</text>
+    <text x="16" y="168" fill="#fde68a" font-size="11">+ text description</text>
+    <text x="16" y="186" fill="#fde68a" font-size="11">+ string location</text>
+    <text x="16" y="204" fill="#fde68a" font-size="11">+ string priority ("Low","Medium","High","Urgent")</text>
+    <text x="16" y="222" fill="#fde68a" font-size="11">+ string status ("Submitted","Assigned",...)</text>
+    <text x="16" y="240" fill="#fde68a" font-size="11">+ string attachment_path</text>
+    <text x="16" y="258" fill="#fde68a" font-size="11">+ datetime due_at (SLA Computed)</text>
+    <text x="16" y="276" fill="#fde68a" font-size="11">+ datetime resolved_at</text>
+    <text x="16" y="294" fill="#fde68a" font-size="11">+ text rejection_reason</text>
+    <line x1="0" y1="308" x2="400" y2="308" stroke="#334155" stroke-width="1.5" />
+    <text x="16" y="330" fill="#e2e8f0" font-size="11">+ is_overdue(): bool</text>
+    <text x="16" y="348" fill="#e2e8f0" font-size="11">+ can_withdraw(): bool (status == 'Submitted')</text>
+    <text x="16" y="366" fill="#e2e8f0" font-size="11">+ can_reopen(): bool (resolved_at &lt;= 7 days)</text>
+    <text x="16" y="384" fill="#e2e8f0" font-size="11">+ comments: list&lt;ComplaintUpdate&gt;</text>
+  </g>
+
+  <!-- Class 5: ComplaintUpdate (Timeline) -->
+  <g transform="translate(980, 100)">
+    <rect x="0" y="0" width="300" height="190" rx="8" fill="#1e293b" stroke="#8b5cf6" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="300" height="32" rx="8" fill="#6d28d9" />
+    <text x="150" y="22" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">ComplaintUpdate (Timeline)</text>
+    <text x="14" y="56" fill="#ddd6fe" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#ddd6fe" font-size="11">+ int complaint_id [FK]</text>
+    <text x="14" y="92" fill="#ddd6fe" font-size="11">+ int updated_by [FK -&gt; users.id]</text>
+    <text x="14" y="110" fill="#ddd6fe" font-size="11">+ string old_status, new_status</text>
+    <text x="14" y="128" fill="#ddd6fe" font-size="11">+ text remark</text>
+    <line x1="0" y1="140" x2="300" y2="140" stroke="#334155" stroke-width="1.5" />
+    <text x="14" y="162" fill="#e2e8f0" font-size="11">+ is_status_change(): bool</text>
+  </g>
+
+  <!-- Class 6: Feedback -->
+  <g transform="translate(980, 340)">
+    <rect x="0" y="0" width="300" height="180" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="300" height="32" rx="8" fill="#d97706" />
+    <text x="150" y="22" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Feedback (Rating)</text>
+    <text x="14" y="56" fill="#fef3c7" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#fef3c7" font-size="11">+ int complaint_id [FK, UNIQUE]</text>
+    <text x="14" y="92" fill="#fef3c7" font-size="11">+ int user_id [FK]</text>
+    <text x="14" y="110" fill="#fef3c7" font-size="11">+ int rating (1 to 5 Stars)</text>
+    <text x="14" y="128" fill="#fef3c7" font-size="11">+ text comment</text>
+  </g>
+
+  <!-- Class 7: Notification -->
+  <g transform="translate(980, 560)">
+    <rect x="0" y="0" width="300" height="160" rx="8" fill="#1e293b" stroke="#06b6d4" stroke-width="2" filter="url(#cls-shadow)" />
+    <rect x="0" y="0" width="300" height="32" rx="8" fill="#0891b2" />
+    <text x="150" y="22" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Notification</text>
+    <text x="14" y="56" fill="#cffafe" font-size="11">+ int id [PK]</text>
+    <text x="14" y="74" fill="#cffafe" font-size="11">+ int user_id [FK]</text>
+    <text x="14" y="92" fill="#cffafe" font-size="11">+ int complaint_id [FK]</text>
+    <text x="14" y="110" fill="#cffafe" font-size="11">+ string message</text>
+    <text x="14" y="128" fill="#cffafe" font-size="11">+ bool is_read</text>
+  </g>
+
+  <!-- Association Multiplicity Lines -->
+  <!-- User 1 to 0..* Complaint -->
+  <line x1="340" y1="200" x2="450" y2="200" stroke="#38bdf8" stroke-width="2" />
+  <text x="350" y="190" fill="#38bdf8" font-size="12" font-weight="700">1</text>
+  <text x="425" y="190" fill="#38bdf8" font-size="12" font-weight="700">0..*</text>
+  <text x="390" y="215" fill="#94a3b8" font-size="11">files</text>
+
+  <!-- Category 1 to 0..* Complaint -->
+  <line x1="340" y1="650" x2="450" y2="450" stroke="#10b981" stroke-width="2" />
+  <text x="350" y="640" fill="#10b981" font-size="12" font-weight="700">1</text>
+  <text x="430" y="440" fill="#10b981" font-size="12" font-weight="700">0..*</text>
+
+  <!-- Complaint 1 *-- 0..* ComplaintUpdate (Composition Diamond) -->
+  <path d="M 850 180 L 980 180" stroke="#8b5cf6" stroke-width="2" marker-start="url(#diamond)" />
+  <text x="870" y="170" fill="#8b5cf6" font-size="12" font-weight="700">1</text>
+  <text x="960" y="170" fill="#8b5cf6" font-size="12" font-weight="700">0..*</text>
+
+  <!-- Complaint 1 -- 0..1 Feedback -->
+  <line x1="850" y1="420" x2="980" y2="420" stroke="#f59e0b" stroke-width="2" />
+  <text x="865" y="410" fill="#f59e0b" font-size="12" font-weight="700">1</text>
+  <text x="960" y="410" fill="#f59e0b" font-size="12" font-weight="700">0..1</text>
+  <text x="915" y="440" fill="#f59e0b" font-size="11">rates</text>
+
+  <!-- Complaint 1 -- 0..* Notification -->
+  <line x1="850" y1="480" x2="980" y2="620" stroke="#06b6d4" stroke-width="2" />
+  <text x="865" y="475" fill="#06b6d4" font-size="12" font-weight="700">1</text>
+  <text x="960" y="610" fill="#06b6d4" font-size="12" font-weight="700">0..*</text>
+</svg>

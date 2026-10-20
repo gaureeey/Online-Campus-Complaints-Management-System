@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCMS - Entity-Relationship (ER) Diagram Viewer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #182234;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 14px 24px;
+      background: var(--bg-secondary);
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fff;
+    }
+    h1 { font-size: 17px; font-weight: 700; color: #fff; }
+    .subtitle { font-size: 12px; color: var(--text-muted); }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    button, a.btn {
+      background: #0284c7;
+      color: #fff;
+      border: 1px solid #0369a1;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    button:hover, a.btn:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+    .btn-amber {
+      background: #d97706;
+      border-color: #b45309;
+    }
+    .btn-amber:hover {
+      background: #b45309;
+    }
+
+    .diagram-container {
+      width: 100%;
+      max-width: 1600px;
+      background: #0b1120;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .diagram-container img, .diagram-container object {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .info-section {
+      width: 100%;
+      max-width: 1600px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .info-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-amber);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 14px;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background: var(--bg-card);
+      color: #fff;
+      font-weight: 600;
+    }
+    tr:hover { background: rgba(255,255,255,0.02); }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-pk { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-fk { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .badge-uk { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      header, .btn-group { display: none !important; }
+      .diagram-container { border: none !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-diagram-3-fill"></i></div>
+      <div>
+        <h1>OCMS Entity-Relationship (ER) Diagram</h1>
+        <div class="subtitle">3rd Normal Form (3NF) Relational Database Schema &amp; Crow's Foot Relationships</div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <a href="entity_relationship_diagram.svg" download="ocms_er_diagram.svg" class="btn">
+        <i class="bi bi-download"></i> Download SVG
+      </a>
+      <button onclick="downloadAsPNG()" class="btn btn-amber">
+        <i class="bi bi-file-earmark-image"></i> Download PNG
+      </button>
+      <button onclick="window.print()" class="btn">
+        <i class="bi bi-printer"></i> Print / Export PDF
+      </button>
+    </div>
+  </header>
+
+  <div class="diagram-container">
+    <img id="er-img" src="entity_relationship_diagram.svg" alt="OCMS Entity-Relationship Diagram">
+  </div>
+
+  <div class="info-section">
+    <h3><i class="bi bi-table"></i> Database Entities &amp; Relational Schema Constraints</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Entity Table</th>
+          <th>Primary Key</th>
+          <th>Foreign Keys (Referenced Tables)</th>
+          <th>Unique Indexes &amp; Constraints</th>
+          <th>Multiplicity Relationship</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>users</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>None</td>
+          <td><span class="badge badge-uk">email</span> (UNIQUE)</td>
+          <td>1 : N with complaints, 1 : N with updates, notifications</td>
+        </tr>
+        <tr>
+          <td><strong>departments</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>None</td>
+          <td><span class="badge badge-uk">name</span> (UNIQUE)</td>
+          <td>1 : N with users (employs)</td>
+        </tr>
+        <tr>
+          <td><strong>categories</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>None</td>
+          <td><span class="badge badge-uk">name</span> (UNIQUE)</td>
+          <td>1 : N with complaints (classifies)</td>
+        </tr>
+        <tr>
+          <td><strong>complaints</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>
+            <span class="badge badge-fk">user_id</span> &rarr; users.id<br/>
+            <span class="badge badge-fk">category_id</span> &rarr; categories.id<br/>
+            <span class="badge badge-fk">assigned_to</span> &rarr; users.id (NULLABLE)<br/>
+            <span class="badge badge-fk">parent_id</span> &rarr; complaints.id
+          </td>
+          <td><span class="badge badge-uk">tracking_number</span> (OCMS-YYYY-XXXX)</td>
+          <td>Central ledger; 1:N composition with updates; 1:1 with feedback</td>
+        </tr>
+        <tr>
+          <td><strong>complaint_updates</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>
+            <span class="badge badge-fk">complaint_id</span> &rarr; complaints.id (CASCADE)<br/>
+            <span class="badge badge-fk">updated_by</span> &rarr; users.id
+          </td>
+          <td>None</td>
+          <td>N : 1 with complaints (append-only timeline)</td>
+        </tr>
+        <tr>
+          <td><strong>feedback</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>
+            <span class="badge badge-fk">complaint_id</span> &rarr; complaints.id<br/>
+            <span class="badge badge-fk">user_id</span> &rarr; users.id
+          </td>
+          <td><span class="badge badge-uk">complaint_id</span> (UNIQUE)</td>
+          <td>1 : 1 optional with complaints (single rating per complaint)</td>
+        </tr>
+        <tr>
+          <td><strong>notifications</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td>
+            <span class="badge badge-fk">user_id</span> &rarr; users.id<br/>
+            <span class="badge badge-fk">complaint_id</span> &rarr; complaints.id
+          </td>
+          <td>None</td>
+          <td>N : 1 with users (inbox alerts)</td>
+        </tr>
+        <tr>
+          <td><strong>audit_logs</strong></td>
+          <td><span class="badge badge-pk">id</span></td>
+          <td><span class="badge badge-fk">user_id</span> &rarr; users.id</td>
+          <td>None</td>
+          <td>N : 1 with users (security audit trail)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    function downloadAsPNG() {
+      const img = document.getElementById('er-img');
+      const canvas = document.createElement('canvas');
+      canvas.width = 1600;
+      canvas.height = 1200;
+      const ctx = canvas.getContext('2d');
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+      image.onload = function() {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0);
+        const link = document.createElement('a');
+        link.download = 'ocms_entity_relationship_diagram.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      };
+      image.src = img.src;
+    }
+  </script>
+</body>
+</html>

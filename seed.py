@@ -18,8 +18,10 @@ from app.models import (
     ComplaintUpdate, Feedback, Notification, AuditLog
 )
 
-def seed_database():
-    app = create_app('default')
+def seed_database(app=None):
+    if app is None:
+        config_mode = os.environ.get('FLASK_CONFIG', 'default')
+        app = create_app(config_mode)
     with app.app_context():
         print(" [1/6] Creating database tables...")
         db.create_all()

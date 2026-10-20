@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCMS - Database Schema Diagram Viewer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    header {
+      width: 100%;
+      max-width: 1600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 12px 24px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+    h1 { font-size: 18px; font-weight: 600; color: #fff; }
+    .btn-group { display: flex; gap: 10px; }
+    button, a {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    button:hover, a:hover { background: #1d4ed8; }
+    .diagram-container {
+      width: 100%;
+      max-width: 1600px;
+      background: #f8fafc;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+    img, object {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OCMS Database Relational Schema Diagram (SQLite 3NF)</h1>
+    <div class="btn-group">
+      <a href="schema_diagram.svg" download="schema_diagram.svg">Download SVG</a>
+      <button onclick="window.print()">Print / Export PDF</button>
+    </div>
+  </header>
+  <div class="diagram-container">
+    <object data="schema_diagram.svg" type="image/svg+xml">
+      <img src="schema_diagram.svg" alt="OCMS Database Schema Diagram">
+    </object>
+  </div>
+</body>
+</html>

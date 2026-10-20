@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCMS - Comprehensive UML & DFD Diagram Suite Viewer</title>
+  <!-- Mermaid.js for live vector diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #182234;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-teal: #14b8a6;
+      --accent-amber: #f59e0b;
+      --accent-purple: #c084fc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0284c7, #0d9488);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #fff;
+    }
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn:hover {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: #0284c7;
+      border-color: #0369a1;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    /* Tab navigation bar */
+    .tab-bar-container {
+      background: #111c2e;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      white-space: nowrap;
+      padding: 0 28px;
+    }
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255,255,255,0.03);
+    }
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      padding: 24px 28px;
+      max-width: 1700px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+    .tab-panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Panels */
+    .viewer-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      margin-bottom: 24px;
+    }
+    .viewer-header {
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .viewer-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .badge-teal {
+      background: rgba(20, 184, 166, 0.15);
+      color: var(--accent-teal);
+      border-color: rgba(20, 184, 166, 0.3);
+    }
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+    .badge-purple {
+      background: rgba(192, 132, 252, 0.15);
+      color: var(--accent-purple);
+      border-color: rgba(192, 132, 252, 0.3);
+    }
+
+    /* Canvas / Diagram container */
+    .diagram-body {
+      padding: 24px;
+      background: #0b1120;
+      overflow: auto;
+      text-align: center;
+      min-height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .diagram-body img,
+    .diagram-body svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Info / Explanation Card */
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-top: 16px;
+    }
+    .info-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .info-card p, .info-card li {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+    .info-card ul {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background: #1e293b;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    /* Quick stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .stat-val { font-size: 20px; font-weight: 700; color: #fff; }
+    .stat-label { font-size: 12px; color: var(--text-muted); }
+
+    /* Print styling */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      header, .tab-bar-container, .btn, .actions { display: none !important; }
+      .tab-panel { display: block !important; page-break-after: always; }
+      .viewer-card { border: 1px solid #ccc !important; box-shadow: none !important; }
+      .diagram-body { background: #fff !important; }
+      .diagram-body svg, .diagram-body img { filter: invert(0) !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-diagram-3"></i></div>
+      <div>
+        <div class="brand-title">Online Campus Complaints Management System (OCMS)</div>
+        <div class="brand-sub">Comprehensive UML &amp; Data Flow Diagrams (DFD) Interactive Suite • IEEE Std 830-1998</div>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="dfd_diagram.svg" download="ocms_dfd_diagram.svg" class="btn">
+        <i class="bi bi-download"></i> Download DFD SVG
+      </a>
+      <a href="uml_diagrams.svg" download="ocms_uml_diagrams.svg" class="btn">
+        <i class="bi bi-download"></i> Download UML SVG
+      </a>
+      <a href="UML_AND_DFD_DIAGRAMS.md" class="btn">
+        <i class="bi bi-file-earmark-text"></i> Read Spec MD
+      </a>
+      <button onclick="window.print()" class="btn btn-primary">
+        <i class="bi bi-printer"></i> Print / Export PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tab Bar -->
+  <div class="tab-bar-container">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('tab-overview', this)"><i class="bi bi-grid-1x2"></i> Overview</button>
+      <button class="tab-btn" onclick="switchTab('tab-dfd-0', this)"><i class="bi bi-circle"></i> DFD Level 0 (Context)</button>
+      <button class="tab-btn" onclick="switchTab('tab-dfd-1', this)"><i class="bi bi-diagram-2"></i> DFD Level 1 (Functional)</button>
+      <button class="tab-btn" onclick="switchTab('tab-dfd-2', this)"><i class="bi bi-diagram-3"></i> DFD Level 2 (Sub-Processes)</button>
+      <button class="tab-btn" onclick="switchTab('tab-use-case', this)"><i class="bi bi-person-gear"></i> UML Use Case</button>
+      <button class="tab-btn" onclick="switchTab('tab-class', this)"><i class="bi bi-box-seam"></i> UML Class Diagram</button>
+      <button class="tab-btn" onclick="switchTab('tab-seq', this)"><i class="bi bi-arrow-down-up"></i> UML Sequence</button>
+      <button class="tab-btn" onclick="switchTab('tab-state', this)"><i class="bi bi-shuffle"></i> UML State Machine</button>
+      <button class="tab-btn" onclick="switchTab('tab-activity', this)"><i class="bi bi-activity"></i> UML Activity</button>
+      <button class="tab-btn" onclick="switchTab('tab-components', this)"><i class="bi bi-layers"></i> Component &amp; Deployment</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-panel active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(56,189,248,0.15); color: #38bdf8;"><i class="bi bi-diagram-3-fill"></i></div>
+          <div>
+            <div class="stat-val">10+ Diagrams</div>
+            <div class="stat-label">DFD L0/L1/L2, Use Case, Class, Seq, State</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(20,184,166,0.15); color: #14b8a6;"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="stat-val">4 Actors</div>
+            <div class="stat-label">Complainant, Staff, Admin, SLA Scheduler</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;"><i class="bi bi-database-fill"></i></div>
+          <div>
+            <div class="stat-val">8 Data Stores</div>
+            <div class="stat-label">users, categories, complaints, feedback, etc.</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(192,132,252,0.15); color: #c084fc;"><i class="bi bi-shield-check"></i></div>
+          <div>
+            <div class="stat-val">IEEE 830-1998</div>
+            <div class="stat-label">Academic Project Report Standard</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-vector-pen"></i> Master Vector Graphic: DFD Level 0 &amp; Level 1 Architecture</div>
+          <span class="badge badge-teal">Vector SVG • Standalone</span>
+        </div>
+        <div class="diagram-body">
+          <img src="dfd_diagram.svg" alt="DFD Diagram">
+        </div>
+      </div>
+
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-vector-pen"></i> Master Vector Graphic: UML Use Case &amp; Class Domain Model</div>
+          <span class="badge badge-purple">Vector SVG • Standalone</span>
+        </div>
+        <div class="diagram-body">
+          <img src="uml_diagrams.svg" alt="UML Diagrams">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: DFD LEVEL 0 (CONTEXT) -->
+    <div id="tab-dfd-0" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-circle"></i> DFD Level 0: Context Analysis Diagram</div>
+          <span class="badge">System Boundary</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph TD
+    User["Complainant<br/>(Student / Resident)"]
+    Staff["Technician Staff<br/>(Field Officer)"]
+    Admin["Campus Administrator<br/>(Facility Manager)"]
+    Clock["System Timer / Scheduler<br/>(SLA Monitor)"]
+
+    OCMS(("0.0<br/>Online Campus Complaints<br/>Management System<br/>(OCMS)"))
+
+    User -->|Registration, Grievance Details, Attachments, Ratings| OCMS
+    OCMS -->|Tracking Token OCMS-YYYY-XXXX, Public Status, Alerts| User
+
+    Staff -->|Status Progression (In Progress, Resolved), Remarks| OCMS
+    OCMS -->|Assigned Task Queue, SLA Deadlines, Location Info| Staff
+
+    Admin -->|Triage Allocation, Priority Override, Category SLAs| OCMS
+    OCMS -->|Executive KPI Cards, Overdue SLA Alerts, CSV Reports| Admin
+
+    Clock -->|Hourly SLA Heartbeat Pulse| OCMS
+    OCMS -->|Overdue Escalation Flagging| Clock
+
+    classDef entity fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef system fill:#0f766e,stroke:#14b8a6,stroke-width:3px,color:#ffffff;
+    class User,Staff,Admin,Clock entity;
+    class OCMS system;
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h4><i class="bi bi-info-circle"></i> Understanding DFD Level 0 Context</h4>
+        <p>The Context Diagram encapsulates the entire OCMS environment as a single centralized bubble (`0.0`). It clearly shows the boundaries between the 4 external entities and the system. Note that no internal database tables are visible at Level 0, preserving black-box abstraction.</p>
+      </div>
+    </div>
+
+    <!-- TAB 3: DFD LEVEL 1 -->
+    <div id="tab-dfd-1" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-diagram-2"></i> DFD Level 1: Functional Subsystem Decomposition</div>
+          <span class="badge badge-teal">6 Core Processes • 8 Data Stores</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph TD
+    E_User["Complainant (Student)"]
+    E_Staff["Technician (Staff)"]
+    E_Admin["Administrator"]
+    E_Clock["Timer / SLA Daemon"]
+
+    P1["1.0 Authentication &amp; Profile Security"]
+    P2["2.0 Complaint Ingestion &amp; Token Engine"]
+    P3["3.0 Administrative Triage &amp; Staff Allocation"]
+    P4["4.0 Staff Work Execution &amp; Progression"]
+    P5["5.0 Service Rating &amp; 7-Day Reopen Loop"]
+    P6["6.0 Analytics, Audit Trail &amp; SLA Monitoring"]
+
+    D1[("D1: users")]
+    D2[("D2: categories")]
+    D4[("D4: complaints")]
+    D5[("D5: complaint_updates")]
+    D6[("D6: feedback")]
+    D7[("D7: notifications")]
+    D8[("D8: audit_logs")]
+
+    E_User -->|Credentials| P1
+    P1 <-->|Verify Hash / Lockout| D1
+    P1 -->|Log Auth Action| D8
+
+    E_User -->|Grievance Data &amp; Photos| P2
+    P2 <-->|Read Category SLA| D2
+    P2 -->|INSERT OCMS-YYYY-XXXX| D4
+    P2 -->|Init Timeline| D5
+
+    E_Admin -->|Assign Staff ID| P3
+    P3 <-->|Query Technicians| D1
+    P3 -->|Update status='Assigned'| D4
+    P3 -->|Log Assignment| D5
+    P3 -->|Dispatch Alert| D7
+    P3 -->|Security Log| D8
+
+    E_Staff -->|Progress: In Progress / Resolved| P4
+    P4 <-->|Fetch Assigned Queue| D4
+    P4 -->|Update status &amp; resolved_at| D4
+    P4 -->|Append Remarks| D5
+    P4 -->|Alert Student| D7
+
+    E_User -->|1-5 Stars &amp; Review| P5
+    E_User -->|Reopen Justification (&lt;=7 Days)| P5
+    P5 -->|Insert Rating| D6
+    P5 -->|Update status='Closed' or 'Reopened'| D4
+    P5 -->|Append Reopen History| D5
+
+    E_Clock -->|Time Pulse| P6
+    E_Admin -->|Request CSV &amp; Metrics| P6
+    P6 <-->|Query Overdue Incidents| D4
+    P6 <-->|Fetch Audit Trail| D8
+    P6 -->|Write Overdue Alert| D7
+
+    classDef entity fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+    classDef process fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef store fill:#334155,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    class E_User,E_Staff,E_Admin,E_Clock entity;
+    class P1,P2,P3,P4,P5,P6 process;
+    class D1,D2,D4,D5,D6,D7,D8 store;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: DFD LEVEL 2 -->
+    <div id="tab-dfd-2" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-diagram-3"></i> DFD Level 2.1: Complaint Submission &amp; SLA Token Minting</div>
+          <span class="badge badge-amber">Decomposition of Process 2.0</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph TD
+    Complainant["Complainant (Student)"]
+    P2_1["2.1 Validate Payload (CSRF &amp; Fields)"]
+    P2_2["2.2 File Upload &amp; UUID Storage"]
+    P2_3["2.3 Compute Dynamic SLA Due Date"]
+    P2_4["2.4 Sequential Token Minting"]
+    P2_5["2.5 Commit Complaint &amp; Timeline"]
+
+    D_Cat[("D2: categories")]
+    D_Comp[("D4: complaints")]
+    D_Upd[("D5: complaint_updates")]
+    FS[("File System: /static/uploads/")]
+
+    Complainant -->|Form: Title, Room, Category, Urgency, Photo| P2_1
+    P2_1 -->|Sanitized Form Fields| P2_2
+    P2_2 -->|Save Stream (.jpg/.png/.pdf &lt;= 5MB)| FS
+    FS -->|Saved Unique Filename| P2_2
+    P2_2 -->|Validated Attachment Path| P2_3
+
+    P2_3 <-->|Read category.sla_hours| D_Cat
+    P2_3 -->|Compute due_at = now + base * multiplier| P2_4
+
+    P2_4 <-->|Query latest OCMS-YYYY-XXXX| D_Comp
+    P2_4 -->|Next Tracking Number| P2_5
+
+    P2_5 -->|INSERT INTO complaints| D_Comp
+    P2_5 -->|INSERT INTO complaint_updates| D_Upd
+    P2_5 -->|Display Success Screen with Token| Complainant
+
+    classDef entity fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+    classDef process fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef store fill:#334155,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    class Complainant entity;
+    class P2_1,P2_2,P2_3,P2_4,P2_5 process;
+    class D_Cat,D_Comp,D_Upd,FS store;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: UML USE CASE -->
+    <div id="tab-use-case" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-person-gear"></i> UML 2.5 Use Case Diagram</div>
+          <span class="badge badge-purple">&lt;&lt;include&gt;&gt; and &lt;&lt;extend&gt;&gt; Relationships</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph LR
+    User["Complainant (Student)"]
+    Staff["Technician (Staff)"]
+    Admin["Campus Administrator"]
+    Clock["SLA Scheduler"]
+
+    subgraph OCMS ["Online Campus Complaints Management System"]
+        UC_Reg((Register &amp; Login))
+        UC_Submit((Submit Complaint &amp; Upload Media))
+        UC_SLA((Compute SLA Deadline))
+        UC_Token((Mint Reference Token))
+        UC_Track((Track Live Status))
+        UC_Withdraw((Withdraw Complaint))
+        UC_Rate((Submit 1-5 Star Rating))
+        UC_Reopen((Reopen Ticket &lt;= 7 Days))
+
+        UC_Queue((View Assigned Queue))
+        UC_Progress((Progress: In Progress))
+        UC_Resolve((Mark Resolved &amp; Remarks))
+        UC_Reject((Reject with Reason))
+
+        UC_Triage((Triage &amp; Assign Staff))
+        UC_Cat((Manage Categories &amp; SLAs))
+        UC_Users((Manage Accounts &amp; Lockout))
+        UC_Reports((Executive Reports &amp; CSV))
+        UC_Audit((Inspect Audit Trail))
+
+        UC_Overdue((Monitor SLA Breaches))
+    end
+
+    User --> UC_Reg
+    User --> UC_Submit
+    User --> UC_Track
+    User --> UC_Withdraw
+    User --> UC_Rate
+    User --> UC_Reopen
+
+    Staff --> UC_Reg
+    Staff --> UC_Queue
+    Staff --> UC_Progress
+    Staff --> UC_Resolve
+    Staff --> UC_Reject
+
+    Admin --> UC_Reg
+    Admin --> UC_Triage
+    Admin --> UC_Cat
+    Admin --> UC_Users
+    Admin --> UC_Reports
+    Admin --> UC_Audit
+
+    Clock --> UC_Overdue
+
+    UC_Submit -.->|&lt;&lt;include&gt;&gt;| UC_SLA
+    UC_Submit -.->|&lt;&lt;include&gt;&gt;| UC_Token
+    UC_Resolve -.->|&lt;&lt;extend&gt;&gt;| UC_Rate
+    UC_Resolve -.->|&lt;&lt;extend&gt;&gt;| UC_Reopen
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: UML CLASS DIAGRAM -->
+    <div id="tab-class" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-box-seam"></i> UML Class Diagram (Domain Model &amp; Multiplicities)</div>
+          <span class="badge badge-teal">SQLAlchemy ORM Entities</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+classDiagram
+    class User {
+        +int id
+        +string name
+        +string email
+        +string phone
+        +string password_hash
+        +string role
+        +bool is_active
+        +int failed_attempts
+        +datetime locked_until
+        +set_password(pwd) void
+        +check_password(pwd) bool
+        +is_locked() bool
+        +get_reset_token() string
+    }
+
+    class Category {
+        +int id
+        +string name
+        +string description
+        +int sla_hours
+        +string default_priority
+        +bool is_active
+        +complaint_count() int
+    }
+
+    class Complaint {
+        +int id
+        +string tracking_number
+        +int user_id
+        +int category_id
+        +int assigned_to
+        +string title
+        +string description
+        +string location
+        +string priority
+        +string status
+        +string attachment_path
+        +datetime due_at
+        +datetime resolved_at
+        +is_overdue() bool
+        +can_withdraw() bool
+        +can_reopen() bool
+    }
+
+    class ComplaintUpdate {
+        +int id
+        +int complaint_id
+        +int updated_by
+        +string old_status
+        +string new_status
+        +string remark
+        +is_status_change() bool
+    }
+
+    class Feedback {
+        +int id
+        +int complaint_id
+        +int user_id
+        +int rating
+        +string comment
+        +datetime created_at
+    }
+
+    class Notification {
+        +int id
+        +int user_id
+        +int complaint_id
+        +string message
+        +bool is_read
+    }
+
+    class AuditLog {
+        +int id
+        +int user_id
+        +string action
+        +string target_id
+        +string ip_address
+    }
+
+    User "1" -- "0..*" Complaint : files >
+    User "1" -- "0..*" Complaint : assigned_to >
+    User "1" -- "0..*" ComplaintUpdate : authors >
+    User "1" -- "0..*" Feedback : writes >
+    Category "1" -- "0..*" Complaint : classifies >
+    Complaint "1" *-- "0..*" ComplaintUpdate : contains_history >
+    Complaint "1" -- "0..1" Feedback : receives_rating >
+    Complaint "1" -- "0..*" Notification : generates >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 7: UML SEQUENCE -->
+    <div id="tab-seq" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-arrow-down-up"></i> UML Sequence Diagram: End-to-End Complaint Lifecycle</div>
+          <span class="badge">Chronological Interaction</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Student as Complainant
+    actor Admin as Administrator
+    actor Staff as Technician
+    participant System as OCMS Application
+    participant DB as SQLite DB
+
+    Student->>System: POST /complaint/new (Title, Category, Priority='High', Photo.jpg)
+    System->>System: Save attachment with UUID prefix
+    System->>System: Calculate SLA deadline (Base 24h * 0.5 = 12h)
+    System->>System: Mint Tracking Token (OCMS-2026-0042)
+    System->>DB: INSERT INTO complaints &amp; complaint_updates
+    System-->>Student: 200 OK: Reference Token OCMS-2026-0042
+
+    Admin->>System: POST /admin/complaint/OCMS-2026-0042/assign (Staff ID=3)
+    System->>DB: UPDATE complaints SET assigned_to=3, status='Assigned'
+    System->>DB: INSERT INTO complaint_updates ("Assigned to Priya Nair")
+    System->>DB: INSERT INTO audit_logs &amp; notifications
+    System-->>Admin: Flash: "Complaint assigned successfully"
+
+    Staff->>System: POST /staff/complaint/OCMS-2026-0042/update-status (status='In Progress')
+    System->>DB: UPDATE complaints SET status='In Progress'
+    System->>DB: INSERT INTO complaint_updates ("Work started on site")
+
+    Staff->>System: POST /staff/complaint/OCMS-2026-0042/update-status (status='Resolved', remark='Fixed MCB breaker')
+    System->>DB: UPDATE complaints SET status='Resolved', resolved_at=NOW()
+    System->>DB: INSERT INTO complaint_updates ("Resolved by technician")
+    System->>DB: INSERT INTO notifications ("Complaint resolved. Please rate.")
+
+    Student->>System: POST /complaint/OCMS-2026-0042/feedback (rating=5, comment='Great service!')
+    System->>DB: INSERT INTO feedback (rating=5)
+    System->>DB: UPDATE complaints SET status='Closed'
+    System-->>Student: Flash: "Thank you for rating our service!"
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 8: UML STATE MACHINE -->
+    <div id="tab-state" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-shuffle"></i> UML State Machine Diagram: Complaint Lifecycle Statechart</div>
+          <span class="badge badge-purple">Finite State Transitions</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+stateDiagram-v2
+    [*] --> Submitted : Complainant Files Grievance (FR-2.1)
+
+    Submitted --> Withdrawn : User Cancels before Assignment (FR-2.9)
+    Submitted --> Rejected : Admin Rejects Invalid / Duplicate (FR-3.2)
+    Submitted --> Assigned : Admin Allocates Technician (FR-3.3)
+
+    Assigned --> In_Progress : Technician Starts Site Repair (FR-4.2)
+    Assigned --> Rejected : Technician Declines with Mandatory Explanation (FR-4.3)
+
+    In_Progress --> Resolved : Technician Marks Fixed &amp; Adds Remarks (FR-4.2)
+    In_Progress --> Rejected : Issue Out of Scope / Unresolvable
+
+    Resolved --> Closed : Complainant Submits 1-5 Star Rating (FR-6.1)
+    Resolved --> Closed : 7 Days Elapse with No Dispute (Auto-Closure)
+    Resolved --> Reopened : Complainant Reopens within 7-Day Window (FR-2.10)
+
+    Reopened --> Assigned : Admin Re-triages Reopened Grievance
+    Reopened --> In_Progress : Assigned Staff Re-attends Site
+
+    Withdrawn --> [*]
+    Rejected --> [*]
+    Closed --> [*]
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 9: UML ACTIVITY -->
+    <div id="tab-activity" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-activity"></i> UML Activity Diagram: Swimlane Workflow</div>
+          <span class="badge badge-teal">Cross-Role Organizational Flow</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph TD
+    subgraph Complainant_Lane ["Complainant (Student)"]
+        A1([Start]) --> A2[Authenticate / Register]
+        A2 --> A3[Fill Form &amp; Upload Photo]
+        A3 --> A4[Receive Token OCMS-YYYY-XXXX]
+        A4 --> A5{Wait or Withdraw?}
+        A5 -->|Withdraw| A6[Click Cancel]
+        A5 -->|Wait| A7[Monitor Live Tracker]
+        A8[Receive Resolution Alert] --> A9{Satisfied?}
+        A9 -->|Yes| A10[Submit 1-5 Star Rating]
+        A9 -->|No &amp; &lt;= 7 Days| A11[Click Reopen Ticket]
+        A10 --> A12([End: Closed])
+    end
+
+    subgraph Admin_Lane ["Campus Administrator"]
+        B1[Inspect Triage Board]
+        B2{Duplicate?}
+        B2 -->|Yes| B3[Merge to Parent &amp; Close]
+        B2 -->|No| B4[Select Staff by Dept]
+        B4 --> B5[Commit Assignment]
+        B6[Monitor SLA Overdue Alerts]
+        B7[Review Reopened Cases]
+    end
+
+    subgraph Staff_Lane ["Technician (Staff)"]
+        C1[Receive Work Order Alert]
+        C2[Inspect Location &amp; Photo]
+        C3{Can Repair?}
+        C3 -->|No| C4[Reject with Reason]
+        C3 -->|Yes| C5[Click Start Work]
+        C5 --> C6[Perform Physical Repairs]
+        C6 --> C7[Submit Resolution Notes]
+    end
+
+    A4 --> B1
+    A6 --> A12
+    B3 --> A12
+    B5 --> C1
+    C4 --> A7
+    C7 --> A8
+    A11 --> B7
+    B7 --> C5
+
+    classDef lane fill:#f8fafc,stroke:#94a3b8,stroke-width:1px;
+    classDef step fill:#ffffff,stroke:#0284c7,stroke-width:2px;
+    classDef decision fill:#fef3c7,stroke:#f59e0b,stroke-width:2px;
+    classDef terminate fill:#1e293b,stroke:#0f172a,stroke-width:2px,color:#ffffff;
+    class A1,A12 terminate;
+    class A2,A3,A4,A6,A7,A8,A10,A11,B1,B3,B4,B5,B6,B7,C1,C2,C4,C5,C6,C7 step;
+    class A5,A9,B2,C3 decision;
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 10: COMPONENT & DEPLOYMENT -->
+    <div id="tab-components" class="tab-panel">
+      <div class="viewer-card">
+        <div class="viewer-header">
+          <div class="viewer-title"><i class="bi bi-layers"></i> UML Component &amp; Deployment Architecture</div>
+          <span class="badge badge-amber">3-Tier Infrastructure</span>
+        </div>
+        <div class="diagram-body">
+          <div class="mermaid">
+graph TD
+    subgraph ClientTier ["Presentation Tier (Client Browser)"]
+        Browser["Modern Browser (HTML5, Bootstrap 5.3.3, Chart.js)"]
+    end
+
+    subgraph ServerNode ["Application Server (Python 3.10+)"]
+        subgraph FlaskApp ["Flask Web Application Factory"]
+            CSRF["Flask-WTF CSRF Middleware"]
+            AuthBP["auth_bp: Login, Register, Lockout"]
+            UserBP["user_bp: Submit, Withdraw, Reopen, Feedback"]
+            StaffBP["staff_bp: Queue, Progress, Rejections"]
+            AdminBP["admin_bp: Triage, Reassign, Users, Reports"]
+            Utils["Utils: SLA Engine, UUID Uploads, AuditLog"]
+        end
+
+        subgraph DataNode ["Persistence Tier"]
+            SQLA["SQLAlchemy ORM Layer"]
+            DB[("SQLite Database<br/>instance/complaints.db")]
+            Uploads[("File System Storage<br/>static/uploads/*.jpg, *.pdf")]
+        end
+    end
+
+    ClientTier -->|HTTPS / REST Requests| CSRF
+    CSRF --> AuthBP
+    CSRF --> UserBP
+    CSRF --> StaffBP
+    CSRF --> AdminBP
+
+    AuthBP --> Utils
+    UserBP --> Utils
+    StaffBP --> Utils
+    AdminBP --> Utils
+
+    Utils --> SQLA
+    Utils --> Uploads
+    SQLA --> DB
+
+    classDef client fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#f8fafc;
+    classDef server fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#ffffff;
+    classDef db fill:#334155,stroke:#f59e0b,stroke-width:2px,color:#fef3c7;
+    class Browser client;
+    class CSRF,AuthBP,UserBP,StaffBP,AdminBP,Utils,SQLA server;
+    class DB,Uploads db;
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        darkMode: true,
+        background: '#0b1120',
+        primaryColor: '#0284c7',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#38bdf8',
+        lineColor: '#38bdf8',
+        secondaryColor: '#0f766e',
+        tertiaryColor: '#1e293b'
+      }
+    });
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+      });
+      const targetPanel = document.getElementById(tabId);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+      if (btn) {
+        btn.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
